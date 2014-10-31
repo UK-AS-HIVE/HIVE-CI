@@ -29,14 +29,29 @@ do
     if [[ ! -z `grep "${VERSION}"  .meteor/release` ]]
     then
       echo "This is a meteor 0.9 app, attempting to add iOS platform and build"
-      (meteor add-platform ios
-      meteor build bundle.tar.gz)
-      wait
-      cd .meteor/local/cordova-build/platforms/ios/
-      #xcodebuild hangs here - why?
-      xcodebuild -scheme "${REPO}" build
- 
+      meteor build --debug --directory build --server https://meteordev.as.uky.edu/${REPO}
+
+      if [[ -e build/ios/project ]]
+      then
+        cd build/ios/project
+
+        # Currently the onlyway to generate schemes, necessary for build, is to actually open XCode
+        open ${REPO}.xcodeproj &
+        echo "Waiting for XCode to generate scheme..."
+        while [[ ! -e ${REPO}.xcodeproj/project.xcworkspace/xcuserdata ]]
+        do
+          sleep 2
+        done
+        sleep 2
+        killall Xcode
+        wait $!
+        xcodebuild archive -project ${REPO}.xcodeproj -scheme ${REPO} -archivePath ${REPO}.xcarchive
+        xcodebuild -exportArchive -archivePath ${REPO}.xcarchive -exportPath ${REPO} -exportFormat ipa -exportProvisioningProfile "HiveMobilePlatform InHouse ProvisioningProfile"
+      fi
+
       BUILD_STATUS=$?
+
+      #TODO deploy using rsync, etc.
     elif [[ -e package.js ]]
     then
       echo "This is a Meteor package, no tests yet"
