@@ -11,15 +11,18 @@ REPOS=$(curl -k -u ${GH_API_TOKEN}:x-oauth-basic https://api.github.com/orgs/UK-
 # Keep log of all tested repos/commits so we dont waste cycles re-testing them
 touch log.txt
  
-for REPO in ${REPOS}
+for REPOGIT in ${REPOS}
 do
-  echo -e "\033[1;30m${REPO}\033[0;30m"
+  REPO=`basename -s .git ${REPOGIT}`
+  echo -e "\033[1;30m${REPOGIT}\033[0;30m"
  
-  rm -rf CloneToTest/
-  git clone --depth=50 https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/${REPO} CloneToTest
-  cd CloneToTest/
+  rm -rf sandbox/
+  mkdir sandbox
+  cd sandbox
+  git clone --depth=50 https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/${REPOGIT}
+  cd ${REPO}
  
-  if [[ ! -z `grep "${REPO} $(git rev-parse HEAD)" ../log.txt` ]]
+  if [[ ! -z `grep "${REPO} $(git rev-parse HEAD)" ../../log.txt` ]]
   then
     # Commit has already been tested, skip
     echo -e "\033[1;37m${REPO} @ $(git rev-parse --short HEAD) has already had CI run, skipping...\033[0;37m"
@@ -29,6 +32,15 @@ do
     if [[ ! -z `grep "${VERSION}"  .meteor/release` ]]
     then
       echo "This is a meteor 0.9 app, attempting to add iOS platform and build"
+
+      # Hack to add private package
+      if [[ ! -z `grep hive:accounts-linkblue .meteor/packages` ]]
+      then
+        cd packages
+        git clone https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/meteor-accounts-linkblue hive:accounts-linkblue
+        cd ..
+      fi
+
       meteor build --debug --directory build --server https://meteordev.as.uky.edu/${REPO}
 
       if [[ -e build/ios/project ]]
@@ -47,6 +59,9 @@ do
         wait $!
         xcodebuild archive -project ${REPO}.xcodeproj -scheme ${REPO} -archivePath ${REPO}.xcarchive
         xcodebuild -exportArchive -archivePath ${REPO}.xcarchive -exportPath ${REPO} -exportFormat ipa -exportProvisioningProfile "HiveMobilePlatform InHouse ProvisioningProfile"
+
+        # TODO: this should be replace by the actual deployment
+        cp ${REPO}.ipa ~
       fi
 
       BUILD_STATUS=$?
@@ -82,13 +97,13 @@ do
     fi
  
     # Keep a record that this commit has been checked
-    echo ${REPO} $(git rev-parse HEAD) >> ../log.txt
+    echo ${REPO} $(git rev-parse HEAD) >> ../../log.txt
  
   fi
  
   ### Change back out to top level dir
  
   cd ${ORIG_PWD}
-  rm -rf CloneToTest/
+  rm -rf sandbox/
  
 done
