@@ -31,11 +31,15 @@ do
     ### Repo-specific tests here
     if [[ ! -z `grep "${VERSION}"  .meteor/release` ]]
     then
-      echo "This is a meteor 0.9 app, attempting to add iOS platform and build"
+      echo -e "\033[1;30mThis is a meteor 0.9 app, attempting to build Meteor and iOS archives\033[0;30m"
 
       # Hack to add private package
       if [[ ! -z `grep hive:accounts-linkblue .meteor/packages` ]]
       then
+        if [[ ! -e packages/ ]]
+        then
+          mkdir packages
+        fi
         cd packages
         git clone https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/meteor-accounts-linkblue hive:accounts-linkblue
         cd ..
@@ -69,14 +73,14 @@ do
       #TODO deploy using rsync, etc.
     elif [[ -e package.js ]]
     then
-      echo "This is a Meteor package, no tests yet"
+      echo -e "\033[1;30mThis is a Meteor package, no tests yet\033[0;30m"
       BUILD_STATUS=2
     elif [[ -e "${REPO}.info" && -e "${REPO}.module" ]]
     then
-      echo "This is a Drupal module, no tests yet"
+      echo -e "\033[1;30mThis is a Drupal module, no tests yet\033[0;30m"
       BUILD_STATUS=2
     else
-      echo "what kind of repo is this?"
+      echo -e "\033[1;30mNot a Meteor or Drupal package, skipping\033[0;30m"
  
       BUILD_STATUS=2
     fi
@@ -84,20 +88,23 @@ do
     # TODO send better emails (everything in one email to an email group?)
     # TODO deploy to devel server
     # TODO deploy to production server, if tagged release
+    echo ${REPO} $(git rev-parse HEAD) >> ../../log.txt
     if [[ ${BUILD_STATUS} -eq 0 ]]
     then
       echo -e "\033[1;32mAutomation success, return status: ${BUILD_STATUS}\033[0;37m"
+      echo "PASSED" >> ../../log.txt
       #echo "Hurray! :-) \n\n$(git log HEAD^..HEAD)" | mail -s "Passed: ${REPO}: commit $(git rev-parse --short HEAD)" digipak@gmail.com
     elif [[ ${BUILD_STATUS} -eq 2 ]]
     then
       echo -e "\033[1;32mAutomation skipped, either not a Meteor repository or no tests are available for this Meteor package.\033[0;37m"
+      echo "SKIPPED" >> ../../log.txt
     else
       echo -e "\033[1;31mAutomation failure, return status: ${BUILD_STATUS}\033[0;37m"
+      echo "FAILED" >> ../../log.txt
       #echo "Sorry :-( \n\n$(git log HEAD^..HEAD)" | mail -s "Failed: ${REPO}: commit $(git rev-parse --short HEAD)" noah.adler@gmail.com
     fi
  
     # Keep a record that this commit has been checked
-    echo ${REPO} $(git rev-parse HEAD) >> ../../log.txt
  
   fi
  
@@ -107,3 +114,6 @@ do
   rm -rf sandbox/
  
 done
+#TODO format this better (HTML instead of plaintext?)
+test -s log.txt && mail -s "CI results" digipak@gmail.com < log.txt
+tput sgr0
