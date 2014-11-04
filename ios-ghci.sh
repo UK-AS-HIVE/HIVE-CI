@@ -28,10 +28,8 @@ do
     git pull
   else
     git clone --depth=50 https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/${REPOGIT}
+    cd ${REPO}
   fi
-  
-
-  cd ${REPO}
  
   if [[ ! -z `grep "${REPO} $(git rev-parse HEAD)" ../../log.txt` ]]
   then
@@ -60,7 +58,7 @@ do
     # TODO send better emails (everything in one email to an email group?)
     # TODO deploy to devel server
     # TODO deploy to production server, if tagged release
-    echo ${REPO} $(git rev-parse HEAD) >> ../../log.txt
+    echo ${REPO} $(git rev-parse HEAD) >> ${ORIG_PWD}/log.txt
     if [[ ${BUILD_STATUS} -eq 0 ]]
     then
       echo -e "\033[1;32mAutomation success, return status: ${BUILD_STATUS}\033[0;37m"
