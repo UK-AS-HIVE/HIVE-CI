@@ -17,11 +17,20 @@ do
   REPO=`basename -s .git ${REPOGIT}`
   echo -e "\033[1;33m${REPOGIT}"
   tput sgr0
- 
-  rm -rf sandbox/
-  mkdir sandbox
+  mkdir -p sandbox 
   cd sandbox
-  git clone --depth=50 https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/${REPOGIT}
+  if [[ -e "${REPO}/" ]]
+  then
+    cd ${REPO}
+    git reset --hard
+    git checkout --
+    git clean -dff
+    git pull
+  else
+    git clone --depth=50 https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/${REPOGIT}
+  fi
+  
+
   cd ${REPO}
  
   if [[ ! -z `grep "${REPO} $(git rev-parse HEAD)" ../../log.txt` ]]
@@ -74,7 +83,7 @@ do
   ### Change back out to top level dir
  
   cd ${ORIG_PWD}
-  rm -rf sandbox/
+
  
 done
 #TODO format this better (HTML instead of plaintext?)
