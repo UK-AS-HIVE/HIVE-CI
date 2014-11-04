@@ -1,7 +1,7 @@
 #!/bin/bash
  
 source settings.sh
-source meteorFunctions.sh
+source includes/meteor/meteorFunctions.sh
  
 ORIG_PWD=`pwd`
 VERSION='0.9'

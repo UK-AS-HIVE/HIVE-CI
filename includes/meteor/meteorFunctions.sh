@@ -40,3 +40,18 @@ function buildMeteor() {
   #TODO deploy using rsync, etc.
 }
 
+# Execute from within the main directory before building
+function meteorApplyDevPatches() {
+  echo "Patching html href and src attributes for relative routes"
+  ls *.html | xargs sed -i 's/href="\//href="\/'"${REPO_NAME}"'\//g'
+  ls *.html | xargs sed -i 's/src="\//src="\/'"${REPO_NAME}"'\//g'
+  find client -name "*.html" -type f -print0 | xargs -0 sed -i 's/href="\//href="\/'"${REPO_NAME}"'\//g'
+  find client -name "*.html" -type f -print0 | xargs -0 sed -i 's/src="\//src="\/'"${REPO_NAME}"'\//g'
+
+  echo "Patching css url() references for relative routes"
+  find client -name "*.css" -type f -print0 | xargs -0 sed -i "s/url(\(['\"]\)\?\(\/\)\?/url(\1\2${REPO_NAME}\//g"
+
+  mkdir -p lib/relativeRoutes
+  cp ${ORIG_PWD}/includes/meteor/relativeRoutes.js lib/relativeRoutes/relativeRoutes.js
+}
+
