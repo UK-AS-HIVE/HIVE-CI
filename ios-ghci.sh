@@ -1,6 +1,7 @@
 #!/bin/bash
  
 source settings.sh
+source meteorFunctions.sh
  
 ORIG_PWD=`pwd`
 VERSION='0.9'
@@ -14,7 +15,8 @@ touch log.txt
 for REPOGIT in ${REPOS}
 do
   REPO=`basename -s .git ${REPOGIT}`
-  echo -e "\033[1;30m${REPOGIT}\033[0;30m"
+  echo -e "\033[1;33m${REPOGIT}"
+  tput sgr0
  
   rm -rf sandbox/
   mkdir sandbox
@@ -31,56 +33,17 @@ do
     ### Repo-specific tests here
     if [[ ! -z `grep "${VERSION}"  .meteor/release` ]]
     then
-      echo -e "\033[1;30mThis is a meteor 0.9 app, attempting to build Meteor and iOS archives\033[0;30m"
-
-      # Hack to add private package
-      if [[ ! -z `grep hive:accounts-linkblue .meteor/packages` ]]
-      then
-        if [[ ! -e packages/ ]]
-        then
-          mkdir packages
-        fi
-        cd packages
-        git clone https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/meteor-accounts-linkblue hive:accounts-linkblue
-        cd ..
-      fi
-
-      meteor build --debug --directory build --server https://meteordev.as.uky.edu/${REPO}
-
-      if [[ -e build/ios/project ]]
-      then
-        cd build/ios/project
-
-        # Currently the onlyway to generate schemes, necessary for build, is to actually open XCode
-        open ${REPO}.xcodeproj &
-        echo "Waiting for XCode to generate scheme..."
-        while [[ ! -e ${REPO}.xcodeproj/project.xcworkspace/xcuserdata ]]
-        do
-          sleep 2
-        done
-        sleep 2
-        killall Xcode
-        wait $!
-        xcodebuild archive -project ${REPO}.xcodeproj -scheme ${REPO} -archivePath ${REPO}.xcarchive
-        xcodebuild -exportArchive -archivePath ${REPO}.xcarchive -exportPath ${REPO} -exportFormat ipa -exportProvisioningProfile "HiveMobilePlatform InHouse ProvisioningProfile"
-
-        # TODO: this should be replace by the actual deployment
-        cp ${REPO}.ipa ~
-      fi
-
-      BUILD_STATUS=$?
-
-      #TODO deploy using rsync, etc.
+      buildMeteor
     elif [[ -e package.js ]]
     then
-      echo -e "\033[1;30mThis is a Meteor package, no tests yet\033[0;30m"
+      echo -e "\033[1mThis is a Meteor package, no tests yet\033[0m"
       BUILD_STATUS=2
     elif [[ -e "${REPO}.info" && -e "${REPO}.module" ]]
     then
-      echo -e "\033[1;30mThis is a Drupal module, no tests yet\033[0;30m"
+      echo -e "\033[1mThis is a Drupal module, no tests yet\033[0m"
       BUILD_STATUS=2
     else
-      echo -e "\033[1;30mNot a Meteor or Drupal package, skipping\033[0;30m"
+      echo -e "\033[1mNot a Meteor or Drupal package, skipping\033[0m"
  
       BUILD_STATUS=2
     fi
