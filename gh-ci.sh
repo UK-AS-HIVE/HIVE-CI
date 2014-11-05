@@ -29,6 +29,8 @@ do
   else
     git clone --depth=50 https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/${REPOGIT}
     cd ${REPO}
+    #Checkout latest commit, regardless of branch. This seems to put us in a detached HEAD state.
+    #git checkout `git log --all --format="%H" -1`
   fi
  
   if [[ ! -z `grep "${REPO} $(git rev-parse HEAD)" ../../log.txt` ]]
@@ -41,6 +43,7 @@ do
     if [[ ! -z `grep "${VERSION}"  .meteor/release` ]]
     then
       buildMeteor
+      deployMeteor
     elif [[ -e package.js ]]
     then
       echo -e "\033[1mThis is a Meteor package, no tests yet\033[0m"
@@ -85,5 +88,5 @@ do
  
 done
 #TODO format this better (HTML instead of plaintext?)
-test -s log.txt && mail -s "CI results" digipak@gmail.com < log.txt
+#test -s log.txt && mail -s "CI results" digipak@gmail.com < log.txt
 tput sgr0

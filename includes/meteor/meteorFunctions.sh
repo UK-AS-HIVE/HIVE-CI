@@ -1,7 +1,7 @@
 #!/bin/sh
 
 function buildMeteor() {
-  echo -e "\033[1mThis is a meteor 0.9 app, attempting to build Meteor and iOS archives\033[0m"
+  echo -e "\033[1mThis is a meteor ${VERSION} app, attempting to build Meteor and iOS archives\033[0m"
 
   # Hack to add private package
   if [[ ! -z `grep hive:accounts-linkblue .meteor/packages` ]]
@@ -30,7 +30,7 @@ function buildMeteor() {
     wait $!
     xcodebuild archive -project ${REPO}.xcodeproj -scheme ${REPO} -archivePath ${REPO}.xcarchive
     xcodebuild -exportArchive -archivePath ${REPO}.xcarchive -exportPath ${REPO} -exportFormat ipa -exportProvisioningProfile "HiveMobilePlatform InHouse ProvisioningProfile"
-
+    generateManifest
     # TODO: this should be replace by the actual deployment
     cp ${REPO}.ipa ~
   fi
@@ -55,3 +55,54 @@ function meteorApplyDevPatches() {
   cp ${ORIG_PWD}/includes/meteor/relativeRoutes.js lib/relativeRoutes/relativeRoutes.js
 }
 
+function deployMeteor() {
+  #Deploy to development servers; if a tagged release, deploy to production server as well.
+  
+  if [[ -z `git describe --exact-match --tags HEAD| grep fatal` ]]
+  then
+    #There has to be something here or it breaks everything. This is wrong though.
+    echo "Tagged"
+    # This is a tagged release, deploy to production server
+  fi
+}
+
+function generateManifest() {
+  PROJ_DIR=`pwd`
+  info_plist=$(ls ${REPO}/*Info.plist | sed -e 's/\.plist//')
+  bundle_id=$(defaults read $PROJ_DIR/$info_plist CFBundleIdentifier)
+  cat << EOF > ${REPO}.plist
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <plist version="1.0">
+    <dict>
+      <key>items</key>
+      <array>
+        <dict>
+          <key>assets</key>
+          <array>
+            <dict>
+              <key>kind</key>
+              <string>software-package</string>
+              <key>url</key>
+              <string>
+                https://apps.as.uky.edu/${REPO}/${REPO}.ipa
+              </string>
+            </dict>
+          </array>
+          <key>metadata</key>
+          <dict>
+            <key>bundle-identifier</key>
+            <string>$bundle_id</string>
+            <key>kind</key>
+            <string>software</string>
+            <key>title</key>
+            <string>${REPO}</string>
+          </dict>
+        </dict>
+      </array>
+    </dict>
+  </plist>
+EOF
+
+#TODO: Deploy with the .ipa
+cp ${REPO}.plist ~
+} 
