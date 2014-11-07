@@ -3,7 +3,9 @@
 source settings.sh
 source includes/meteor/meteorFunctions.sh
  
-ORIG_PWD=`pwd`
+ORIG_DIR=`pwd`
+BUILD_DIR=${ORIG_DIR}/sandbox/build
+STAGE_DIR=${ORIG_DIR}/sandbox/stage
 VERSION='0.9'
  
 # Find all URLs under github account
@@ -17,8 +19,8 @@ do
   REPO=`basename -s .git ${REPOGIT}`
   echo -e "\033[1;33m${REPOGIT}"
   tput sgr0
-  mkdir -p sandbox 
-  cd sandbox
+  mkdir -p ${BUILD_DIR}
+  cd ${BUILD_DIR}
   if [[ -e "${REPO}/" ]]
   then
     cd ${REPO}

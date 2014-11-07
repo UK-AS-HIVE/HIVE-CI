@@ -53,7 +53,7 @@ function meteorApplyDevPatches() {
   find client -name "*.css" -type f -print0 | xargs -0 sed -i '' "s/url(\(['\"]\)\?\(\/\)\?/url(\1\2${REPO_NAME}\//g"
 
   mkdir -p lib/relativeRoutes
-  cp ${ORIG_PWD}/includes/meteor/relativeRoutes.js lib/relativeRoutes/relativeRoutes.js
+  cp ${ORIG_DIR}/includes/meteor/relativeRoutes.js lib/relativeRoutes/relativeRoutes.js
 }
 
 function deployMeteor() {
