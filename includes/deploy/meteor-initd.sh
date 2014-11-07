@@ -1,13 +1,15 @@
 #!/bin/bash
 
-DIRS=`ls -l --time-style="long-iso" $STAGE_DIR | egrep '^d' | awk '{print $8}'`
+STAGE_DIR='/Users/digipak/Desktop/HIVE-ci/sandbox/build'
+APPS_DIR='${STAGE_DIR}/var/meteor'
+DIRS=`ls -l $APPS_DIR | egrep '^d' | awk '{print $9}'`
 PORT=3000
 
 mkdir -p init.d/
 
 for DIR in $DIRS
 do
-  cat << EOF > init.d/meteor-$DIR
+  cat << EOF > $STAGE_DIR/etc/initd/meteor-$DIR
 #!/bin/bash
 #
 # description: Script to start a meteor application through forever
@@ -101,5 +103,5 @@ esac
 exit $RETVAL
 
 EOF
-
+done
 PORT=$((PORT+1))
