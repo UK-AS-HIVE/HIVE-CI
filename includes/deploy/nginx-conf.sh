@@ -1,3 +1,5 @@
+#!/bin/bash
+
 WEB_DIR='/var/meteor'
 DIRS=`ls -l --time-style="long-iso" $WEB_DIR | egrep '^d' | awk '{print 8}'`
 PORT=3000
