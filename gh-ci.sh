@@ -63,7 +63,7 @@ do
     # TODO send better emails (everything in one email to an email group?)
     # TODO deploy to devel server
     # TODO deploy to production server, if tagged release
-    echo ${REPO} $(git rev-parse HEAD) >> ${ORIG_PWD}/log.txt
+    echo ${REPO} $(git rev-parse HEAD) >> ${ORIG_DIR}/log.txt
     if [[ ${BUILD_STATUS} -eq 0 ]]
     then
       echo -e "\033[1;32mAutomation success, return status: ${BUILD_STATUS}\033[0;37m"
@@ -85,7 +85,7 @@ do
  
   ### Change back out to top level dir
  
-  cd ${ORIG_PWD}
+  cd ${ORIG_DIR}
 
  
 done
