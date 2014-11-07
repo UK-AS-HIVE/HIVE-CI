@@ -103,5 +103,5 @@ esac
 exit $RETVAL
 
 EOF
-done
 PORT=$((PORT+1))
+done
