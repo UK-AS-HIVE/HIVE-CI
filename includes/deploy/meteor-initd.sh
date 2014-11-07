@@ -1,6 +1,5 @@
 #!/bin/bash
 
-STAGE_DIR='/Users/digipak/Desktop/HIVE-ci/sandbox/build'
 APPS_DIR='${STAGE_DIR}/var/meteor'
 DIRS=`ls -l $APPS_DIR | egrep '^d' | awk '{print $9}'`
 PORT=3000

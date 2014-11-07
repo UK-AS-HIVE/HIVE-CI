@@ -35,7 +35,7 @@ do
     #git checkout `git log --all --format="%H" -1`
   fi
  
-  if [[ ! -z `grep "${REPO} $(git rev-parse HEAD)" ../../log.txt` ]]
+  if [[ ! -z `grep "${REPO} $(git rev-parse HEAD)" ${ORIG_DIR}/log.txt` ]]
   then
     # Commit has already been tested, skip
     echo -e "\033[1;37m${REPO} @ $(git rev-parse --short HEAD) has already had CI run, skipping...\033[0;37m"
@@ -67,15 +67,15 @@ do
     if [[ ${BUILD_STATUS} -eq 0 ]]
     then
       echo -e "\033[1;32mAutomation success, return status: ${BUILD_STATUS}\033[0;37m"
-      echo "PASSED" >> ../../log.txt
+      echo "PASSED" >> ${ORIG_DIR}/log.txt
       #echo "Hurray! :-) \n\n$(git log HEAD^..HEAD)" | mail -s "Passed: ${REPO}: commit $(git rev-parse --short HEAD)" digipak@gmail.com
     elif [[ ${BUILD_STATUS} -eq 2 ]]
     then
       echo -e "\033[1;32mAutomation skipped, either not a Meteor repository or no tests are available for this Meteor package.\033[0;37m"
-      echo "SKIPPED" >> ../../log.txt
+      echo "SKIPPED" >> ${ORIG_DIR}/log.txt
     else
       echo -e "\033[1;31mAutomation failure, return status: ${BUILD_STATUS}\033[0;37m"
-      echo "FAILED" >> ../../log.txt
+      echo "FAILED" >> ${ORIG_DIR}/log.txt
       #echo "Sorry :-( \n\n$(git log HEAD^..HEAD)" | mail -s "Failed: ${REPO}: commit $(git rev-parse --short HEAD)" noah.adler@gmail.com
     fi
  

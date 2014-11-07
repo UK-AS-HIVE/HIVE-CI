@@ -33,7 +33,8 @@ function buildMeteor() {
     xcodebuild -exportArchive -archivePath ${REPO}.xcarchive -exportPath ${REPO} -exportFormat ipa -exportProvisioningProfile "HiveMobilePlatform InHouse ProvisioningProfile"
     generateManifest
     # TODO: this should be replace by the actual deployment
-    cp ${REPO}.ipa ~
+    mkdir -p ${STAGE_DIR}/var/www
+    cp ${REPO}.ipa ${STAGE_DIR}/var/www/
   fi
 
   BUILD_STATUS=$?
@@ -105,5 +106,6 @@ function generateManifest() {
 EOF
 
 #TODO: Deploy with the .ipa
-cp ${REPO}.plist ~
+mkdir -p ${STAGE_DIR}/var/www
+cp ${REPO}.plist ${STAGE_DIR}/var/www/
 } 
