@@ -2,7 +2,8 @@
  
 source settings.sh
 source includes/meteor/meteorFunctions.sh
- 
+source includes/deploy/generateNginx.sh
+source includes/deploy/generateInitd.sh 
 ORIG_DIR=`pwd`
 BUILD_DIR=${ORIG_DIR}/sandbox/build
 STAGE_DIR=${ORIG_DIR}/sandbox/stage
@@ -110,4 +111,4 @@ function notify() {
 }
 
 main
-
+tput sgr0
