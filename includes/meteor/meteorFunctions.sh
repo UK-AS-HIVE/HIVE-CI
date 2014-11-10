@@ -77,6 +77,7 @@ function deployMeteor() {
 
   generateNginx
   generateInitd
+  generateHtmlindex
 }
 
 function generateManifest() {
