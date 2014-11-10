@@ -51,10 +51,10 @@ function generateInitd {
 	# Notice that we change the PATH because on reboot
 	# the PATH does not include the path to node.
 	cd $sourceDir
-	PATH=/usr/local/bin:$PATH
+	PATH=/usr/local/bin:\$PATH
 	PORT=$PORT
 	MONGO_URL=mongodb://localhost:27017/$DIR
-	ROOT_URL=http://$DIR.as.uky.edu
+	ROOT_URL=${DEV_SERVER}/${DIR}
 	MAIL_URL=smtp://localhost:25
 
 	forever start --pidFile $pidfile -l $logFile -o $outFile -e $errFile -a -d --sourceDir $sourceDir/ main.js
