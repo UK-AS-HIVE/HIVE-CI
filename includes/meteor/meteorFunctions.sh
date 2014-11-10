@@ -15,6 +15,14 @@ function buildMeteor() {
   meteorApplyDevPatches
   meteor build --debug --directory build --server https://meteordev.as.uky.edu/${REPO}
 
+  if [[ -e build/bundle ]]
+  then
+    #This is a weird way to do this.
+    rm -rf ${STAGE_DIR}/var/meteor/${REPO}
+    mkdir ${STAGE_DIR}/var/meteor/${REPO}
+    cp -R build/bundle/ ${STAGE_DIR}/var/meteor/${REPO}
+  fi
+
   if [[ -e build/ios/project ]]
   then
     cd build/ios/project
@@ -36,7 +44,7 @@ function buildMeteor() {
     mkdir -p ${STAGE_DIR}/var/www
     cp ${REPO}.ipa ${STAGE_DIR}/var/www/
   fi
-
+  
   BUILD_STATUS=$?
 
   #TODO deploy using rsync, etc.
@@ -66,6 +74,9 @@ function deployMeteor() {
     echo "Tagged"
     # This is a tagged release, deploy to production server
   fi
+
+  generateNginx
+  generateInitd
 }
 
 function generateManifest() {
