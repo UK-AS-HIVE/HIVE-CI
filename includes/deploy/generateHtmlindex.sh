@@ -11,9 +11,12 @@ EOF
 
   for PLIST in $PLISTS
   do
+    TIME=$(ls -l ${STAGE_DIR}/var/www/${PLIST} | awk '{print $6,$7,$8}')
     NAME=`basename -s .plist $PLIST`
-    echo -e "<a href=\"$DEVSERVER/$NAME/\">$NAME on the web</a><br />" >> ${STAGE_DIR}/var/www/index.html
-    echo -e "<a href=\"itms-services://?action=download-manifest&url=$DEVSERVER/$NAME.plist\">Install $NAME as an iOS app</a><br />" >> ${STAGE_DIR}/var/www/index.html 
+    echo -e "<h2>${NAME} - ${TIME}</h2>" >> ${STAGE_DIR}/var/www/index.html
+    echo -e "<a href=\"$DEVSERVER/$NAME/\">Web</a><br />" >> ${STAGE_DIR}/var/www/index.html
+    echo -e "<a href=\"$DEVSERVER/$NAME.apk\">Android</a><br />" >> ${STAGE_DIR}/var/www/index.html
+    echo -e "<a href=\"itms-services://?action=download-manifest&url=$DEVSERVER/$NAME.plist\">iOS App</a><br />" >> ${STAGE_DIR}/var/www/index.html 
   done
 
   cat << EOF >> ${STAGE_DIR}/var/www/index.html
