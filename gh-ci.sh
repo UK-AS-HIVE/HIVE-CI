@@ -14,11 +14,29 @@ REPOS=$(curl -k -u ${GH_API_TOKEN}:x-oauth-basic https://api.github.com/orgs/UK-
 # Keep log of all tested repos/commits so we dont waste cycles re-testing them
 touch log.txt
  
-for REPOGIT in ${REPOS}
-do
-  REPO=`basename -s .git ${REPOGIT}`
-  echo -e "\033[1;33m${REPOGIT}"
-  tput sgr0
+function main() {
+  for REPOGIT in ${REPOS}
+  do
+    REPO=`basename -s .git ${REPOGIT}`
+    echo -e "\033[1;33m${REPOGIT}"
+    tput sgr0
+
+    #TODO: refector into multiple phases
+    #update
+    build
+    #test
+    #stage
+
+    ### Change back out to top level dir
+    cd ${ORIG_DIR}
+  done
+
+  #TODO: global processing after all repos have been iterated
+  #deployGlobal
+  #notifyGlobal
+}
+
+function build() {
   mkdir -p ${BUILD_DIR}
   cd ${BUILD_DIR}
   if [[ -e "${REPO}/" ]]
@@ -59,6 +77,13 @@ do
  
       BUILD_STATUS=2
     fi
+
+    notify
+  fi
+}
+
+
+function notify() {
  
     # TODO send better emails (everything in one email to an email group?)
     # TODO deploy to devel server
@@ -81,14 +106,8 @@ do
  
     # Keep a record that this commit has been checked
  
-  fi
- 
-  ### Change back out to top level dir
- 
-  cd ${ORIG_DIR}
 
- 
-done
-#TODO format this better (HTML instead of plaintext?)
-#test -s log.txt && mail -s "CI results" digipak@gmail.com < log.txt
-tput sgr0
+}
+
+main
+
