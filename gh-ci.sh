@@ -4,13 +4,15 @@ source settings.sh
 source includes/meteor/meteorFunctions.sh
 source includes/deploy/generateNginx.sh
 source includes/deploy/generateInitd.sh 
+source includes/deploy/generateHtmlindex.sh
+
 ORIG_DIR=`pwd`
 BUILD_DIR=${ORIG_DIR}/sandbox/build
 STAGE_DIR=${ORIG_DIR}/sandbox/stage
-VERSION='0.9'
+METEOR_VERSION='0.9'
  
 # Find all URLs under github account
-REPOS=$(curl -k -u ${GH_API_TOKEN}:x-oauth-basic https://api.github.com/orgs/UK-AS-HIVE/repos | grep clone_url | grep -o -e "https[^\"]\+" | grep -o -e "[a-zA-Z0-9_-]\+\.git$")
+REPOS=$(curl -k -u ${GH_API_TOKEN}:x-oauth-basic https://api.github.com/orgs/${ORG_NAME}/repos | grep clone_url | grep -o -e "https[^\"]\+" | grep -o -e "[a-zA-Z0-9_-]\+\.git$")
  
 # Keep log of all tested repos/commits so we dont waste cycles re-testing them
 touch log.txt
@@ -48,7 +50,7 @@ function build() {
     git clean -dff
     git pull
   else
-    git clone --depth=50 https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/${REPOGIT}
+    git clone --depth=50 https://${GH_API_TOKEN}:x-oauth-basic@github.com/${ORG_NAME}/${REPOGIT}
     cd ${REPO}
     #Checkout latest commit, regardless of branch. This seems to put us in a detached HEAD state.
     #git checkout `git log --all --format="%H" -1`
@@ -61,7 +63,7 @@ function build() {
   else
     
     ### Repo-specific tests here
-    if [[ ! -z `grep "${VERSION}"  .meteor/release` ]]
+    if [[ ! -z `grep "${METEOR_VERSION}"  .meteor/release` ]]
     then
       buildMeteor
       deployMeteor

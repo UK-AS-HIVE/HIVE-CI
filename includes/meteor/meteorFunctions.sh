@@ -1,7 +1,7 @@
 #!/bin/sh
 
 function buildMeteor() {
-  echo -e "\033[1mThis is a meteor ${VERSION} app, attempting to build Meteor and iOS archives\033[0m"
+  echo -e "\033[1mThis is a meteor ${METEOR_VERSION} app, attempting to build Meteor and iOS archives\033[0m"
 
   # Hack to add private package
   if [[ ! -z `grep hive:accounts-linkblue .meteor/packages` ]]
@@ -13,13 +13,13 @@ function buildMeteor() {
   fi
   meteor add-platform ios
   meteorApplyDevPatches
-  meteor build --debug --directory build --server https://meteordev.as.uky.edu/${REPO}
+  meteor build --debug --directory build --server ${DEV_SERVER}/${REPO}
 
   if [[ -e build/bundle ]]
   then
     #This is a weird way to do this.
     rm -rf ${STAGE_DIR}/var/meteor/${REPO}
-    mkdir ${STAGE_DIR}/var/meteor/${REPO}
+    mkdir -p ${STAGE_DIR}/var/meteor/${REPO}
     cp -R build/bundle/ ${STAGE_DIR}/var/meteor/${REPO}
   fi
 
@@ -98,7 +98,7 @@ function generateManifest() {
               <string>software-package</string>
               <key>url</key>
               <string>
-                https://apps.as.uky.edu/${REPO}/${REPO}.ipa
+                ${APPS_SERVER}/${REPO}.ipa
               </string>
             </dict>
           </array>
