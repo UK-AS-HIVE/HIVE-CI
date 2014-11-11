@@ -112,5 +112,19 @@ function notify() {
 
 }
 
+function deployToDev() {
+  cd ${STAGE_DIR}
+  rsync -avz -e ssh var/www/ root@meteordev.as.uky.edu:/var/www
+  for APP_DIR in `ls var/meteor`
+  do
+    echo "Deploying ${APP_DIR} to /var/meteor/${APP_DIR}..."
+    rsync -avz --delete -e ssh var/meteor/${APP_DIR} root@meteordev.as.uky.edu:/var/meteor
+  done
+
+  rsync -avz -e ssh etc/nginx/sites-available/meteordev.conf root@meteordev.as.uky.edu:/etc/nginx/sites-available/meteordev.conf
+  rsync -avz -e ssh etc/init.d/ root@meteordev.as.uky.edu:/etc/init.d
+}
+
 main
+deployToDev
 tput sgr0
