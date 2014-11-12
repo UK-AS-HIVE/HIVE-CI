@@ -6,7 +6,8 @@
     subpath = subpath.substring(0, subpath.length-1);
     var oldRoute = Router.route;
     Router.route = function (name, options) {
-        arguments[1].path = subpath + options.path;
+        if (options)
+          arguments[1].path = subpath + options.path;
         return oldRoute.apply(this, arguments);
     };
  

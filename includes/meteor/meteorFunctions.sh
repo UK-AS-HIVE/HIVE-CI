@@ -53,13 +53,13 @@ function buildMeteor() {
 # Execute from within the main directory before building
 function meteorApplyDevPatches() {
   echo "Patching html href and src attributes for relative routes"
-  find . -depth 1 -name "*.html" | xargs sed -i '' 's/href="\//href="\/'"${REPO_NAME}"'\//g'
-  find . -depth 1 -name "*.html" | xargs sed -i '' 's/src="\//src="\/'"${REPO_NAME}"'\//g'
-  find client -name "*.html" -type f -print0 | xargs -0 sed -i '' 's/href="\//href="\/'"${REPO_NAME}"'\//g'
-  find client -name "*.html" -type f -print0 | xargs -0 sed -i '' 's/src="\//src="\/'"${REPO_NAME}"'\//g'
+  find . -depth 1 -name "*.html" | xargs gsed -i 's/href="\//href="\/'"${REPO}"'\//g'
+  find . -depth 1 -name "*.html" | xargs gsed -i 's/src="\//src="\/'"${REPO}"'\//g'
+  find client -name "*.html" -type f -print0 | xargs -0 gsed -i 's/href="\//href="\/'"${REPO}"'\//g'
+  find client -name "*.html" -type f -print0 | xargs -0 gsed -i 's/src="\//src="\/'"${REPO}"'\//g'
 
   echo "Patching css url() references for relative routes"
-  find client -name "*.css" -type f -print0 | xargs -0 sed -i '' "s/url(\(['\"]\)\?\(\/\)\?/url(\1\2${REPO_NAME}\//g"
+  find client -name "*.css" -type f -print0 | xargs -0 gsed -i "s/url(\(['\"]\)\?\(\/\)\?/url(\1\2${REPO}\//g"
 
   mkdir -p lib/relativeRoutes
   cp ${ORIG_DIR}/includes/meteor/relativeRoutes.js lib/relativeRoutes/relativeRoutes.js
