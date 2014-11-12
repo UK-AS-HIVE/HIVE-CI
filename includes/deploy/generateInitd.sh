@@ -52,10 +52,10 @@ start() {
   # the PATH does not include the path to node.
   cd \$sourceDir
   PATH=/usr/local/bin:\$PATH
-  PORT=$PORT
-  MONGO_URL=mongodb://localhost:27017/$DIR
-  ROOT_URL=${DEV_SERVER}/${DIR}
-  MAIL_URL=smtp://localhost:25
+  export PORT=$PORT
+  export MONGO_URL=mongodb://localhost:27017/$DIR
+  export ROOT_URL=${DEV_SERVER}/${DIR}
+  export MAIL_URL=smtp://localhost:25
 
   forever start --pidFile \$pidfile -l \$logFile -o \$outFile -e \$errFile -a -d --sourceDir \$sourceDir/ main.js
 
@@ -84,7 +84,6 @@ status() {
 case "\$1" in
   start)
   start
-  find
   ;;
   stop)
   stop
@@ -105,4 +104,5 @@ exit \$RETVAL
 EOF
 PORT=$((PORT+1))
 done
+chmod +x ${STAGE_DIR}/etc/init.d/*
 }

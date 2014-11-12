@@ -75,9 +75,6 @@ function deployMeteor() {
     # This is a tagged release, deploy to production server
   fi
 
-  generateNginx
-  generateInitd
-  generateHtmlindex
 }
 
 function generateManifest() {
