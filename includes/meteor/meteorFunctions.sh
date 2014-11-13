@@ -56,10 +56,12 @@ function buildMeteor() {
     cp ${REPO}.ipa ${STAGE_DIR}/var/www/
   fi
 
-  if [[ -e build/android/unaligned.apk ]]
+  if [[ -e ${BUILD_DIR}/${REPO}/build/android/project ]]
   then
+    cd ${BUILD_DIR}/${REPO}/build/android/project
+    ant release
     mkdir -p ${STAGE_DIR}/var/www
-    cp build/android/unaligned.apk ${STAGE_DIR}/var/www/${REPO}.apk
+    cp bin/${REPO}-release-unsigned.apk ${STAGE_DIR}/var/www/${REPO}.apk
   fi
   
   BUILD_STATUS=$?
