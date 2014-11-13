@@ -12,7 +12,14 @@ function buildMeteor() {
     cd ..
   fi
   meteor add-platform ios
+  if [[ -z `grep android .meteor/platforms` ]]
+  then
+    echo android >> .meteor/platforms
+  fi
   meteorApplyDevPatches
+
+  # Make sure to generate a clean build, since android seems to bail if the projects were already made
+  rm -rf build
   meteor build --debug --directory build --server ${DEV_SERVER}/${REPO}
 
   if [[ -e build/bundle ]]
@@ -43,6 +50,12 @@ function buildMeteor() {
     # TODO: this should be replace by the actual deployment
     mkdir -p ${STAGE_DIR}/var/www
     cp ${REPO}.ipa ${STAGE_DIR}/var/www/
+  fi
+
+  if [[ -e build/android/unaligned.apk ]]
+  then
+    mkdir -p ${STAGE_DIR}/var/www
+    cp build/android/unaligned.apk ${STAGE_DIR}/var/www/${REPO}.apk
   fi
   
   BUILD_STATUS=$?
