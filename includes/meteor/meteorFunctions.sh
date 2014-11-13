@@ -82,36 +82,35 @@ function generateManifest() {
   info_plist=$(ls ${REPO}/*Info.plist | sed -e 's/\.plist//')
   bundle_id=$(defaults read $PROJ_DIR/$info_plist CFBundleIdentifier)
   cat << EOF > ${REPO}.plist
-  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-  <plist version="1.0">
-    <dict>
-      <key>items</key>
-      <array>
-        <dict>
-          <key>assets</key>
-          <array>
-            <dict>
-              <key>kind</key>
-              <string>software-package</string>
-              <key>url</key>
-              <string>
-                ${APPS_SERVER}/${REPO}.ipa
-              </string>
-            </dict>
-          </array>
-          <key>metadata</key>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>items</key>
+    <array>
+      <dict>
+        <key>assets</key>
+        <array>
           <dict>
-            <key>bundle-identifier</key>
-            <string>$bundle_id</string>
             <key>kind</key>
-            <string>software</string>
-            <key>title</key>
-            <string>${REPO}</string>
+            <string>software-package</string>
+            <key>url</key>
+            <string>${DEV_SERVER}/${REPO}.ipa</string>
           </dict>
+        </array>
+        <key>metadata</key>
+        <dict>
+          <key>bundle-identifier</key>
+          <string>$bundle_id</string>
+          <key>kind</key>
+          <string>software</string>
+          <key>title</key>
+          <string>${REPO}</string>
         </dict>
-      </array>
-    </dict>
-  </plist>
+      </dict>
+    </array>
+  </dict>
+</plist>
 EOF
 
 #TODO: Deploy with the .ipa
