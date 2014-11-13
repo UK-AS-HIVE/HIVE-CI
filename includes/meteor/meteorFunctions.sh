@@ -30,6 +30,10 @@ function buildMeteor() {
     cp -R build/bundle/ ${STAGE_DIR}/var/meteor/${REPO}
   fi
 
+  #find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#"ROOT_URL":"'"${DEV_SERVER}"'/"#ROOT_URL":"'"${DEV_SERVER}/${REPO}/"'"#g'
+  find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#"ROOT_URL_PATH_PREFIX":""#"ROOT_URL_PATH_PREFIX":"'"${REPO}"'"#g'
+  find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#"DDP_DEFAULT_CONNECTION_URL":"'"${DEV_SERVER}"'"#"DDP_DEFAULT_CONNECTION_URL":"'"${DEV_SERVER}/${REPO}"'"#g'
+
   if [[ -e build/ios/project ]]
   then
     cd build/ios/project
