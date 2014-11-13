@@ -122,7 +122,7 @@ function deployToDev() {
   for APP_DIR in `ls var/meteor`
   do
     echo "Deploying ${APP_DIR} to /var/meteor/${APP_DIR}..."
-    rsync -avz --delete --exclude 'node_modules/' -e ssh var/meteor/${APP_DIR} root@meteordev.as.uky.edu:/var/meteor
+    rsync -avz --delete --exclude 'node_modules/' --exclude 'files/' -e ssh var/meteor/${APP_DIR} root@meteordev.as.uky.edu:/var/meteor
   done
 
   rsync -avz -e ssh etc/nginx/sites-available/meteordev.conf root@meteordev.as.uky.edu:/etc/nginx/sites-available/meteordev.conf
