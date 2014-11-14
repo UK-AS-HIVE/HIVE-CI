@@ -2,6 +2,7 @@
  
 source settings.sh
 source includes/meteor/meteorFunctions.sh
+source includes/meteor/iosFunctions.sh
 source includes/deploy/generateNginx.sh
 source includes/deploy/generateInitd.sh 
 source includes/deploy/generateHtmlindex.sh
