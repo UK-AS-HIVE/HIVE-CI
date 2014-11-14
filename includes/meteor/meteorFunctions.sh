@@ -48,6 +48,13 @@ function buildMeteor() {
     sleep 2
     killall Xcode
     wait $!
+    
+    #Change bundle identifier to match organization.
+    #TODO: Update version/build numbers as well?
+    PROJ_DIR=`pwd`
+    info_plist=$(ls ${REPO}/*Info.plist | sed -e 's/\.plist//')
+    defaults write ${PROJ_DIR}/${info_plist} CFBundleIdentifier ${ORG_PREFIX}.${REPO} 
+
     xcodebuild archive -project ${REPO}.xcodeproj -scheme ${REPO} -archivePath ${REPO}.xcarchive
     xcodebuild -exportArchive -archivePath ${REPO}.xcarchive -exportPath ${REPO} -exportFormat ipa -exportProvisioningProfile "HiveMobilePlatform InHouse ProvisioningProfile"
     generateManifest

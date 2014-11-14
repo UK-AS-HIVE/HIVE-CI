@@ -3,7 +3,7 @@
 #GitHub API Token and Organization name
 GH_API_TOKEN='01234567890'
 ORG_NAME="UK-AS-HIVE"
-
+ORG_PREFIX="edu.uky.as"
 #Servers to which apps will be deployed
 APPS_SERVER="https://apps.as.uky.edu"
 DEV_SERVER="https://meteordev.as.uky.edu"
