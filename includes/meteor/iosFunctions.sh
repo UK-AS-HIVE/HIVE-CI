@@ -24,6 +24,10 @@ function buildIos {
     info_plist=$(ls ${REPO}/*Info.plist | sed -e 's/\.plist//')
     defaults write ${PROJ_DIR}/${info_plist} CFBundleIdentifier ${ORG_PREFIX}.${REPO} 
 
+
+    #Make sure we are signing for distribution
+    gsed -i 's/\(CODE_SIGN_IDENTITY.*\)Developer/\1Distribution/' ${REPO}.xcodeproj/project.pbxproj
+
     xcodebuild archive -project ${REPO}.xcodeproj -scheme ${REPO} -archivePath ${REPO}.xcarchive
     xcodebuild -exportArchive -archivePath ${REPO}.xcarchive -exportPath ${REPO} -exportFormat ipa -exportProvisioningProfile "HiveMobilePlatform InHouse ProvisioningProfile"
     
