@@ -64,7 +64,7 @@ function build() {
   else
     
     ### Repo-specific tests here
-    if [[ ! -z `grep "${METEOR_VERSION}"  .meteor/release` ]]
+    if [[ -e .meteor/release ]]
     then
       buildMeteor
       deployMeteor

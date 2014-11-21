@@ -3,9 +3,9 @@
 
 function buildIos {  
 
-  if [[ -e build/ios/project ]]
+  if [[ -e ../${REPO}-build/ios/project ]]
   then
-    cd build/ios/project
+    cd ../${REPO}-build/ios/project
 
     # Currently the onlyway to generate schemes, necessary for build, is to actually open XCode
     open ${REPO}.xcodeproj &
@@ -30,7 +30,7 @@ function buildIos {
 
     xcodebuild archive -project ${REPO}.xcodeproj -scheme ${REPO} -archivePath ${REPO}.xcarchive
     xcodebuild -exportArchive -archivePath ${REPO}.xcarchive -exportPath ${REPO} -exportFormat ipa -exportProvisioningProfile "HiveMobilePlatform InHouse ProvisioningProfile"
-    
+
     generateManifest
     
     mkdir -p ${STAGE_DIR}/var/www

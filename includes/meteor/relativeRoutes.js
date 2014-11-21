@@ -6,7 +6,7 @@
     subpath = subpath.substring(0, subpath.length-1);
     var oldRoute = Router.route;
     Router.route = function (name, options) {
-        if (options)
+        if (options && !Meteor.isServer)
           arguments[1].path = subpath + options.path;
         return oldRoute.apply(this, arguments);
     };
