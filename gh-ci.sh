@@ -92,6 +92,7 @@ function notify() {
     # TODO send better emails (everything in one email to an email group?)
     # TODO deploy to devel server
     # TODO deploy to production server, if tagged release
+    cd ${BUILD_DIR}/${REPO}
     echo ${REPO} $(git rev-parse HEAD) >> ${ORIG_DIR}/log.txt
     if [[ ${BUILD_STATUS} -eq 0 ]]
     then

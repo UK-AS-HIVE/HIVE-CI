@@ -20,7 +20,7 @@ function buildMeteor() {
 
   # Make sure to generate a clean build, since android seems to bail if the projects were already made
   rm -rf build ../${REPO}-build
-  meteor build --directory ../${REPO}-build --server ${DEV_SERVER}/${REPO}
+  meteor build --debug --directory ../${REPO}-build --server ${DEV_SERVER}/${REPO}
 
   if [[ -e ../${REPO}-build/bundle ]]
   then
@@ -41,9 +41,9 @@ function buildMeteor() {
   if [[ -e ${BUILD_DIR}/${REPO}-build/android/project ]]
   then
     cd ${BUILD_DIR}/${REPO}-build/android/project
-    ant release
+    ant debug
     mkdir -p ${STAGE_DIR}/var/www
-    cp bin/${REPO}-release-unsigned.apk ${STAGE_DIR}/var/www/${REPO}.apk
+    cp bin/${REPO}-debug-unaligned.apk ${STAGE_DIR}/var/www/${REPO}.apk
   fi
   
   BUILD_STATUS=$?
