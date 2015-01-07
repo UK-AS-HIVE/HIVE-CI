@@ -61,8 +61,8 @@ EOF
     if [[ -e "${BUILD_DIR}/${DIR}/settings.json" ]]
     then
       echo "Project ${DIR} includes settings.json, converting to environment variable for deployment"
-      SETTINGS=$(cat ${BUILD_DIR}/${DIR}/settings.json | python -c 'import json,sys; print json.dumps(sys.stdin.read())')
-      echo "  export METEOR_SETTINGS=${SETTINGS}" >> $STAGE_DIR/etc/init.d/meteor-$DIR
+      SETTINGS=$(cat ${BUILD_DIR}/${DIR}/settings.json | python -c "import json,sys; print json.dumps(sys.stdin.read())[1:-1]")
+      echo "  export METEOR_SETTINGS=\$'${SETTINGS}'" >> $STAGE_DIR/etc/init.d/meteor-$DIR
     fi
 
     cat << EOF >> $STAGE_DIR/etc/init.d/meteor-$DIR
