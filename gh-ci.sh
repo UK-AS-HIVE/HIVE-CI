@@ -13,7 +13,7 @@ STAGE_DIR=${ORIG_DIR}/sandbox/stage
 METEOR_VERSION='0.9'
  
 # Find all URLs under github account
-REPOS=$(curl -k -u ${GH_API_TOKEN}:x-oauth-basic https://api.github.com/orgs/${ORG_NAME}/repos | grep clone_url | grep -o -e "https[^\"]\+" | grep -o -e "[a-zA-Z0-9_-]\+\.git$")
+REPOS=$(curl -k -u ${GH_API_TOKEN}:x-oauth-basic "https://api.github.com/orgs/${ORG_NAME}/repos?per_page=100" | grep clone_url | grep -o -e "https[^\"]\+" | grep -o -e "[a-zA-Z0-9_-]\+\.git$")
  
 # Keep log of all tested repos/commits so we dont waste cycles re-testing them
 touch log.txt
