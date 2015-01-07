@@ -56,6 +56,16 @@ start() {
   export MONGO_URL=mongodb://localhost:27017/$DIR
   export ROOT_URL=${DEV_SERVER}/${DIR}
   export MAIL_URL=smtp://localhost:25
+EOF
+
+    if [[ -e "${BUILD_DIR}/${DIR}/settings.json" ]]
+    then
+      echo "Project ${DIR} includes settings.json, converting to environment variable for deployment"
+      SETTINGS=$(cat ${BUILD_DIR}/${DIR}/settings.json | python -c 'import json,sys; print json.dumps(sys.stdin.read())')
+      echo "  export METEOR_SETTINGS=${SETTINGS}" >> $STAGE_DIR/etc/init.d/meteor-$DIR
+    fi
+
+    cat << EOF >> $STAGE_DIR/etc/init.d/meteor-$DIR
 
   forever start --pidFile \$pidfile -l \$logFile -o \$outFile -e \$errFile -a -d --sourceDir \$sourceDir/ main.js
 
