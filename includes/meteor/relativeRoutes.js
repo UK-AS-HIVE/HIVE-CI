@@ -7,7 +7,7 @@
     var oldRoute = Router.route;
     Router.route = function (name, options) {
         if (options && !Meteor.isServer)
-          arguments[1].path = subpath + options.path;
+          arguments[1].path = subpath + (options.path || name);
         return oldRoute.apply(this, arguments);
     };
  
