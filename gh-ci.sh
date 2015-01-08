@@ -25,6 +25,9 @@ function main() {
     echo -e "\033[1;33m${REPOGIT}"
     tput sgr0
 
+    echo "Updating IRC service hook"
+    curl -k -u ${GH_API_TOKEN}:x-oauth-basic -X POST -H "Content-Type: application/json" -d '{"name":"irc","active":true,"events":["push","pull_request"],"config":{"server":"chat.freenode.net","port":"","room":"#uk-hive","nick":"","branches":"","nickserv_password":"","password":"","ssl":"1","message_without_join":"1","no_colors":"0","long_url":"0","notice":"1"}}' "https://api.github.com/repos/${ORG_NAME}/${REPO}/hooks"
+
     #TODO: refector into multiple phases
     #update
     build
