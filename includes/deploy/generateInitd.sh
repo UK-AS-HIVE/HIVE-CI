@@ -1,6 +1,7 @@
 #!/bin/bash
 function generateInitd {
   APPS_DIR="${STAGE_DIR}/var/meteor"
+  mkdir -p ${APPS_DIR}
   DIRS=`ls -l $APPS_DIR | egrep '^d' | awk '{print $9}'`
   PORT=3000
 

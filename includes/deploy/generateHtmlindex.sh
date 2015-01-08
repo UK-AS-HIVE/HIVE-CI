@@ -1,8 +1,8 @@
 #!/bin/bash
 function generateHtmlindex {
+  mkdir -p ${STAGE_DIR}/var/www
   PLISTS=$(ls ${STAGE_DIR}/var/www/*.plist | grep -o -e "[a-zA-Z0-9_-]\+\.plist$")
   DEVSERVER='https://meteordev.as.uky.edu'
-  mkdir -p ${STAGE_DIR}/var/www
   touch $STAGE_DIR/var/www/index.html
   cat << EOF > ${STAGE_DIR}/var/www/index.html
 <html>
