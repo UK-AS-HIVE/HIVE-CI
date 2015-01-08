@@ -11,6 +11,23 @@ function buildMeteor() {
     git clone https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/meteor-accounts-linkblue hive:accounts-linkblue
     cd ..
   fi
+
+  if [[ ! -z `grep hive:accounts-ldap .meteor/packages` ]]
+  then
+    mkdir -p packages
+    cd packages
+    git clone https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/meteor-accounts-ldap hive:accounts-ldap
+    cd ..
+  fi
+
+  if [[ ! -z `grep differential:workers .meteor/packages` ]]
+  then
+    mkdir -p packages
+    cd packages
+    git clone https://github.com/Differential/meteor-workers differential:workers
+    cd ..
+  fi
+
   meteor add-platform ios
   if [[ -z `grep android .meteor/platforms` ]]
   then
