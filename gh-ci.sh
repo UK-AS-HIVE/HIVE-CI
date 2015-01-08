@@ -53,9 +53,11 @@ function build() {
   else
     git clone --depth=50 https://${GH_API_TOKEN}:x-oauth-basic@github.com/${ORG_NAME}/${REPOGIT}
     cd ${REPO}
-    #Checkout latest commit, regardless of branch. This seems to put us in a detached HEAD state.
-    #git checkout `git log --all --format="%H" -1`
   fi
+
+  #Checkout latest commit, regardless of branch. This seems to put us in a detached HEAD state.
+  git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+  git checkout `git log --all --format="%H" -1`
  
   if [[ ! -z `grep "${REPO} $(git rev-parse HEAD)" ${ORIG_DIR}/log.txt` ]]
   then
