@@ -134,6 +134,16 @@ function deployToDev() {
 
   rsync -avz -e ssh etc/nginx/sites-available/meteordev.conf root@meteordev.as.uky.edu:/etc/nginx/sites-available/meteordev.conf
   rsync -avz -e ssh etc/init.d/ root@meteordev.as.uky.edu:/etc/init.d
+
+  # Moke sure each app service is set to run on startup, and go ahead and restart the running instance
+  for APP_DIR in `ls var/meteor`
+  do
+    echo "Adding meteor-${APP_DIR} to default runlevel, and restarting"
+    ssh root@meteordev.as.uky.edu << ENDSSH
+      update-rc.d meteor-${APP_DIR} defaults
+      /etc/init.d/meteor-${APP_DIR} restart || /etc/init.d/meteor-${APP_DIR} start
+ENDSSH
+  done
 }
 
 main
