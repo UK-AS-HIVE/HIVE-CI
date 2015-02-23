@@ -14,8 +14,8 @@ function generateInitd {
 #
 # description: Script to start a meteor application through forever
 # processname: forever/coffeescript/node
-# pidfile: /var/run/forever-initd-$DIR.pid
-# logfile: /var/run/forever-initd-$DIR.log
+# pidfile: /var/log/forever-initd-$DIR.pid
+# logfile: /var/log/forever-initd-$DIR.log
 #
 # Based on a script posted by
 # https://github.com/hectorcorrea/hectorcorrea.com/blob/master/etc/forever-initd-hectorcorrea.sh
@@ -35,10 +35,10 @@ function generateInitd {
 # Description:     This file should be used to construct scripts to be
 #                  placed in /etc/init.d.
 ### END INIT INFO
-pidfile=/var/run/forever-initd-meteor-$DIR.pid
-logFile=/var/run/forever-initd-meteor-$DIR.log
-errFile=/var/run/forever-initd-meteor-$DIR.err
-outFile=/var/run/forever-initd-meteor-$DIR.out
+pidfile=/var/log/forever-initd-meteor-$DIR.pid
+logFile=/var/log/forever-initd-meteor-$DIR.log
+errFile=/var/log/forever-initd-meteor-$DIR.err
+outFile=/var/log/forever-initd-meteor-$DIR.out
 
 sourceDir=/var/meteor/$DIR
 scriptId=\$sourceDir/main.js
