@@ -26,7 +26,7 @@ function main() {
     tput sgr0
 
     echo "Updating IRC service hook"
-    curl -k -u ${GH_API_TOKEN}:x-oauth-basic -X POST -H "Content-Type: application/json" -d '{"name":"irc","active":true,"events":["push","pull_request"],"config":{"server":"chat.freenode.net","port":"","room":"#uk-hive","nick":"","branches":"","nickserv_password":"","password":"","ssl":"1","message_without_join":"1","no_colors":"0","long_url":"0","notice":"1"}}' "https://api.github.com/repos/${ORG_NAME}/${REPO}/hooks"
+    curl -k -u ${GH_API_TOKEN}:x-oauth-basic -X POST -H "Content-Type: application/json" -d '{"name":"irc","active":true,"events":["push","pull_request"],"config":{"server":"chat.freenode.net","port":"","room":"#uk-hive","nick":"","branches":"","nickserv_password":"","password":"","ssl":"1","message_without_join":"1","no_colors":"0","long_url":"0","notice":"1"}}' "https://api.github.com/repos/${ORG_NAME}/${REPO}/hooks" > /dev/null
 
     #TODO: refector into multiple phases
     #update
@@ -134,6 +134,16 @@ function deployToDev() {
 
   rsync -avz -e ssh etc/nginx/sites-available/meteordev.conf root@meteordev.as.uky.edu:/etc/nginx/sites-available/meteordev.conf
   rsync -avz -e ssh etc/init.d/ root@meteordev.as.uky.edu:/etc/init.d
+
+  # Moke sure each app service is set to run on startup, and go ahead and restart the running instance
+  for APP_DIR in `ls var/meteor`
+  do
+    echo "Adding meteor-${APP_DIR} to default runlevel, and restarting"
+    ssh root@meteordev.as.uky.edu << ENDSSH
+      update-rc.d meteor-${APP_DIR} defaults
+      /etc/init.d/meteor-${APP_DIR} restart || /etc/init.d/meteor-${APP_DIR} start
+ENDSSH
+  done
 }
 
 main

@@ -5,10 +5,15 @@
     var subpath = url.substring(slash);
     subpath = subpath.substring(0, subpath.length-1);
     var oldRoute = Router.route;
-    Router.route = function (name, options) {
-        if (options && !Meteor.isServer)
-          arguments[1].path = subpath + (options.path || name);
-        return oldRoute.apply(this, arguments);
+    Router.route = function (name) {
+        args = Array.prototype.slice.call(arguments);
+        if (args.length > 1 && !Meteor.isServer) {
+          if (typeof(args[args.length-1]) === 'function')
+            args.push({});
+          options = args[args.length-1];
+          options.path = subpath + (options.path || name);
+        }
+        return oldRoute.apply(this, args);
     };
  
     var oldGo = Router.go;
