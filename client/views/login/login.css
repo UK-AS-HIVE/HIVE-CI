@@ -1,0 +1,16 @@
+.login-box {
+  text-align: center;
+  background: #eee;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 4px -1px rgba(0, 0, 0, 0.5);
+}
+.login-form {
+  margin-top: 42px;
+}
+.form-group {
+  text-align: center;
+}
+.input {
+  border: 1px solid;
+}

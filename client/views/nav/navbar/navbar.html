@@ -1,0 +1,40 @@
+<template name="navbar">
+<nav class="navbar navbar-default navbar-static-top navbar-no-padding">
+<div class="container-fluid">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+      <span class="sr-only">Continuous Integration</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/">Continuous Integration</a>
+  </div>
+  {{#if currentUser }}
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="navbar-collapse">
+    <ul class="nav navbar-nav">
+      <button class="btn btn-danger navbar-btn" type="button" data-toggle="modal" data-target="#ticketModal">New Ticket</button>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        {{currentUser.username}}
+        <img src="https://as.uky.edu/profile-picture/{{currentUser.username}}" style="max-height: 23px; max-width: 100px;">
+        <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href="/my/dashboard">Settings</a></li>
+        <li class="divider"></li>
+        <li><a href="#" id="logout">Logout</a></li>
+      </ul>
+      </li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+  {{/if}}
+</div>
+</nav>
+{{#if currentUser}}
+{{>ticketModal}}
+{{/if}}
+</template>

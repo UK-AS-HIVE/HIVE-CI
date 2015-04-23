@@ -1,0 +1,47 @@
+<template name="project">
+  <p>
+    <h1>{{name}}</h1>
+    {{gitUrl}}<br/>
+  </p>
+
+  <button class="btn btn-success run-job-button">Run</button>
+
+  <h4>Current</h4>
+  {{#with mostRecentBuildSession}}
+  <div style={{rowStyle this}}>
+    {{status}}<br/>
+    <small>
+      {{#if git}}
+        {{git.commitHash}}<br/>
+        {{git.committerName}}: {{git.commitMessage}}<br/>
+      {{/if}}
+      {{#if message}}{{message}}<br/>{{/if}}
+    </small>
+  </div>
+  {{/with}}
+
+  <h4>History</h4>
+  <table class="table">
+    <tbody>
+      {{#each buildSessions}}
+        <tr style={{rowStyle this}}>
+          <td>
+            <small>{{moment timestamp}}</small>
+          </td>
+          <td>
+            {{status}}<br/>
+            <small>
+              {{#if git}}
+                {{git.commitHash}}<br/>
+                {{git.committerName}}: {{git.commitMessage}}<br/>
+              {{/if}}
+              {{#if message}}{{message}}<br/>{{/if}}
+            </small>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+</template>
+
