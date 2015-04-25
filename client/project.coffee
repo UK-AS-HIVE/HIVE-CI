@@ -13,6 +13,10 @@ Template.project.helpers
       'background: rgba(255,0,0,0.1);'
   moment: (date) ->
     moment(date).format('YYYY-MM-DD hh:mm:ss')
+  stdout: ->
+    window.requestAnimationFrame ->
+      $('textarea').scrollTop(99999)
+    _.pluck(@stages, 'stdout').join('\n\n')
 
 Template.project.events
   'click .run-job-button': (e, tpl) ->

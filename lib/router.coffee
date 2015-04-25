@@ -21,6 +21,9 @@ Router.map ->
       Projects.findOne({name: @params.projectName})
     waitOn: ->
       Meteor.subscribe 'projectDetail', @params.projectName
+
+  @route 'about',
+    path: '/about'
       
   @route 'serveFile',
     path: '/file/:filename'

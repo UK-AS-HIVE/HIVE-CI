@@ -32,7 +32,6 @@ class @BuildProjectJob extends ExecJob
     repo = orgAndRepo[2].replace '.git', ''
     url = "https://#{Meteor.settings.ghApiToken}:x-oauth-basic@github.com/#{org}/#{repo}"
     @params.cmd = """
-      echo Fetch phase
       mkdir -p #{buildDir}
       cd #{buildDir}
       if [[ -e "#{repo}/" ]]
@@ -53,11 +52,15 @@ class @BuildProjectJob extends ExecJob
       git log --all --format="%s" -1
       git log --all --format="%cn" -1
     """
-    out = super()
+    ex = super()
+    out = ex.stdout
     console.log out
 
     gitInfo = out.trim().split('\n')
-    gitInfo = gitInfo.slice(gitInfo.length-3,gitInfo.length+1)
+    if gitInfo.length >= 3
+      gitInfo = gitInfo.slice(gitInfo.length-3,gitInfo.length+1)
+    else
+      gitInfo = [null, null, null]
     hash = gitInfo[0]
     subject = gitInfo[1]
     author = gitInfo[2]
@@ -76,34 +79,80 @@ class @BuildProjectJob extends ExecJob
           commitHash: hash
           committerName: author
           commitMessage: subject
+      $push:
+        stages:
+          name: 'Fetch'
+          stdout: out
 
-    if !Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/.meteor")
+    if !Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/.meteor") && !Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/package.js")
       BuildSessions.update session._id,
         $set:
           status: 'Unsupported'
           message: 'Not a Meteor repository'
           timestamp: Date.now()
       return
+    # stage.name - name of stage, for ui
+    # stage.cmd - shell command to execute
+    # stage.errorCallback - callback function with which to detect an error or
+    #   verify proper output of executed cmd.  will be called with a single
+    #   parameter, the stdout string of the executed process, and should return 0
+    #   for no error or any other value for error.
+    stages =
+      [
+        name: 'CoffeeLint'
+        cmd: """
+            CF=`find . -name "*.coffee" | grep -v .meteor | grep -v packages`
+            test -z "${CF}" || coffeelint ${CF}
+          """
+        errorMessage: (out) ->
+          clErrors = out?.trim().split('\n').pop().match(/\ [0-9]{1,} errors?/)?.shift()?.trim()
+          "CoffeeLint found #{clErrors}"
+      ,
+        name: 'jshint'
+        cmd: """
+            JF=`find . -name "*.js" | grep -v .meteor | grep -v packages`
+            test -z "${JF}" || jshint ${JF}
+          """
+        errorMessage: (out) ->
+          "jshint found " + out?.trim().split('\n').pop()
+      ,
+        name: 'spacejam'
+        cmd: """
+          if [[ -e .meteor/release && -d packages ]]
+          then
+            spacejam test-packages packages/*
+          fi
+          if [[ -e package.js ]]
+          then
+           spacejam test-packages ./
+          fi
+        """
+      ]
 
-    @params.cmd = """
-      cd #{fr}/sandbox/build/#{repo}
-      coffeelint `find . -name "*.coffee" | grep -v .meteor | grep -v packages`
-    """
-    BuildSessions.update {'git.commitHash': hash},
-      $set:
-        message: 'CoffeeLint...'
-
-    out = super()
-    console.log out
-
-    clErrors = out.trim().split('\n').pop().match(/\ [0-9]{1,} errors?/)?.shift().trim()
-
-    if clErrors? and clErrors != '0 errors'
+    for s in stages
+      @params.cmd = """
+        cd #{fr}/sandbox/build/#{repo}
+        #{s.cmd}
+      """
       BuildSessions.update session._id,
         $set:
-          status: 'Fail'
-          message: "CoffeeLint found #{clErrors}"
-      return
+          message: s.name
+      ex = super()
+      console.log "stage #{s.name}"
+      console.log ex.stdout
+
+      if ex.code != 0
+        msg = (s.errorMessage? && s.errorMessage(ex.stdout)) || "#{s.cmd} returned exit code #{ex.code}"
+        check msg, String
+        BuildSessions.update session._id,
+          $set:
+             status: 'Fail'
+             message: msg
+          $push:
+            stages:
+              name: s.name
+              stdout: ex.stdout
+        return
 
     BuildSessions.update session._id,
       $set:

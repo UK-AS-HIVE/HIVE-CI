@@ -6,9 +6,12 @@
 
   <button class="btn btn-success run-job-button">Run</button>
 
-  <h4>Current</h4>
+  <a href="{{gitUrl}}" target="_blank" class="btn btn-default">Github <img height="20px" src="/GitHub-Mark/PNG/GitHub-Mark-32px.png"></a>
+
+
   {{#with mostRecentBuildSession}}
   <div style={{rowStyle this}}>
+    <h4>Latest</h4>
     {{status}}<br/>
     <small>
       {{#if git}}
@@ -17,6 +20,12 @@
       {{/if}}
       {{#if message}}{{message}}<br/>{{/if}}
     </small>
+
+    {{#if stdout}}
+      <textarea style="width: 100%; height: 200px;">
+        {{stdout}}
+      </textarea>
+    {{/if}}
   </div>
   {{/with}}
 
@@ -35,7 +44,9 @@
                 {{git.commitHash}}<br/>
                 {{git.committerName}}: {{git.commitMessage}}<br/>
               {{/if}}
-              {{#if message}}{{message}}<br/>{{/if}}
+              {{#if message}}
+                {{message}}<br/>
+              {{/if}}
             </small>
           </td>
         </tr>

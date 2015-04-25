@@ -1,0 +1,28 @@
+<template name="about">
+  <h1>Continuous Integration</h1>
+
+  <p>Continous Integration refers to automation of common software development
+  tasks such as code building, testing, and deployment in order to smooth the
+  collaboration process.  This open-source system is written in Meteor, and
+  integrates with the GitHub code sharing network, to automatically build and
+  deploy web apps and hybrid mobile apps based on the Meteor platform.</p>
+
+  <p>Our process includes the following stages:
+    <ul>
+      <li>fetch from github</li>
+      <li>CoffeeLint</li>
+      <li>jshint</li>
+      <li>run tests</li>
+      <li>build server</li>
+      <li>build iOS app</li>
+      <li>build Android app</li>
+      <li>update nginx configuration</li>
+      <li>rsync deploy to remote nginx/Linux server</li>
+      <li>notify developers with results</li>
+    </ul>
+  </p>
+
+
+  <img src="/flowchart.png" />
+</template>
+
