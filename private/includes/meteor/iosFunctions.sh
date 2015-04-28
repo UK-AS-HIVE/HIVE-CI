@@ -1,11 +1,8 @@
-
-#!/bin/bash
-
 function buildIos {  
 
-  if [[ -e ../${REPO}-build/ios/project ]]
+  if [[ -e ${BUILD_DIR}/${REPO}-build/ios/project ]]
   then
-    cd ../${REPO}-build/ios/project
+    cd ${BUILD_DIR}/${REPO}-build/ios/project
 
     # Currently the onlyway to generate schemes, necessary for build, is to actually open XCode
     open ${REPO}.xcodeproj &
@@ -22,8 +19,7 @@ function buildIos {
     #TODO: Update version/build numbers as well
     PROJ_DIR=`pwd`
     info_plist=$(ls ${REPO}/*Info.plist | sed -e 's/\.plist//')
-    defaults write ${PROJ_DIR}/${info_plist} CFBundleIdentifier ${ORG_PREFIX}.${REPO} 
-
+    defaults write ${PROJ_DIR}/${info_plist} CFBundleIdentifier ${ORG_REVERSE_URL}.${REPO}
 
     #Make sure we are signing for distribution
     gsed -i 's/\(CODE_SIGN_IDENTITY.*\)Developer/\1Distribution/' ${REPO}.xcodeproj/project.pbxproj

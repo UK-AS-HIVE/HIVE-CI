@@ -1,5 +1,5 @@
 Template.default.helpers
-  projects: -> Projects.find()
+  projects: -> Projects.find({}, {sort: {pushedAt: -1}})
   buildSession: -> BuildSessions.findOne({projectId: @_id})
   latestStage: ->
     _.last @stages

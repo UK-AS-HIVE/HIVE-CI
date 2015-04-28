@@ -1,6 +1,5 @@
-#!/bin/sh
-
 function buildMeteor() {
+  cd ${BUILD_DIR}/${REPO}
   echo -e "\033[1mThis is a meteor ${METEOR_VERSION} app, attempting to build Meteor and iOS archives\033[0m"
 
   # Hack to add private package
@@ -17,14 +16,6 @@ function buildMeteor() {
     mkdir -p packages
     cd packages
     git clone https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/meteor-accounts-ldap hive:accounts-ldap
-    cd ..
-  fi
-
-  if [[ ! -z `grep differential:workers .meteor/packages` ]]
-  then
-    mkdir -p packages
-    cd packages
-    git clone https://github.com/Differential/meteor-workers differential:workers
     cd ..
   fi
 
@@ -45,26 +36,37 @@ function buildMeteor() {
   fi
   meteorApplyDevPatches
 
+  echo "Finished applying dev patches..."
+
+  echo "Making build directory"
   # Make sure to generate a clean build, since android seems to bail if the projects were already made
   rm -rf build ../${REPO}-build
-  meteor build --debug --directory ../${REPO}-build --server ${DEV_SERVER}/${REPO}
+  echo "Building... for devserver ${DEV_SERVER}"
+  meteor build --debug --directory ${BUILD_DIR}/${REPO}-build --server ${DEV_SERVER}/${REPO}
 
-  if [[ -e ../${REPO}-build/bundle ]]
+  RET=$?
+  if [[ ${RET} != 0 ]]
+  then
+    exit ${RET}
+  fi
+
+  if [[ -e ${BUILD_DIR}/${REPO}-build/bundle ]]
   then
     #This is a weird way to do this.
     rm -rf ${STAGE_DIR}/var/meteor/${REPO}
     mkdir -p ${STAGE_DIR}/var/meteor/${REPO}
-    cp -R ../${REPO}-build/bundle/ ${STAGE_DIR}/var/meteor/${REPO}
+    cp -R ${BUILD_DIR}/${REPO}-build/bundle/ ${STAGE_DIR}/var/meteor/${REPO}
   fi
 
-  cd ../${REPO}-build
+  cd ${BUILD_DIR}/${REPO}-build
 
   #find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#"ROOT_URL":"'"${DEV_SERVER}"'/"#ROOT_URL":"'"${DEV_SERVER}/${REPO}/"'"#g'
   find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#"ROOT_URL_PATH_PREFIX":""#"ROOT_URL_PATH_PREFIX":"/'"${REPO}"'"#g'
   find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#"DDP_DEFAULT_CONNECTION_URL":"'"${DEV_SERVER}"'"#"DDP_DEFAULT_CONNECTION_URL":"'"${DEV_SERVER}/${REPO}"'"#g'
+}
 
-  buildIos
-  
+function buildAndroid() {
+
   if [[ -e ${BUILD_DIR}/${REPO}-build/android/project ]]
   then
     cd ${BUILD_DIR}/${REPO}-build/android/project
@@ -72,9 +74,6 @@ function buildMeteor() {
     mkdir -p ${STAGE_DIR}/var/www
     cp bin/${REPO}-debug-unaligned.apk ${STAGE_DIR}/var/www/${REPO}.apk
   fi
-  
-  BUILD_STATUS=$?
-
 }
 
 # Execute from within the main directory before building
@@ -88,6 +87,7 @@ function meteorApplyDevPatches() {
   echo "Patching css url() references for relative routes"
   find client -name "*.css" -type f -print0 | xargs -0 gsed -i "s/url(\(['\"]\)\?\(\/\)\?/url(\1\2${REPO}\//g"
 
+  echo "Copying ${ORIG_DIR}/includes/meteor/relativeRoutes.js"
   mkdir -p lib/relativeRoutes
   cp ${ORIG_DIR}/includes/meteor/relativeRoutes.js lib/relativeRoutes/relativeRoutes.js
 }

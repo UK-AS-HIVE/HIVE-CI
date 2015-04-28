@@ -14,7 +14,7 @@ class @BuildProjectJob extends ExecJob
   handleJob: ->
     proj = Projects.findOne(@params.projectId)
     session = BuildSessions.findOne({projectId: @params.projectId}, {sort: {timestamp: -1}})
-    console.log 'building project '+proj.name
+    console.log '*** building project '+proj.name+' ***'
     #Projects.update {_id: @params.projectId}, {$set: {status: 'Building'}}
 
     BuildSessions.update session._id,
@@ -26,6 +26,7 @@ class @BuildProjectJob extends ExecJob
     fr = FileRegistry.getFileRoot()
 
     buildDir = fr + '/sandbox/build'
+    stageDir = fr + '/sandbox/stage'
 
     orgAndRepo = proj.gitUrl.match(/([a-zA-Z0-9-_.]+)\/([a-zA-Z0-9-_.]+)$/)
     org = orgAndRepo[1]
@@ -84,13 +85,25 @@ class @BuildProjectJob extends ExecJob
           name: 'Fetch'
           stdout: out
 
-    if !Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/.meteor") && !Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/package.js")
+    if !Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/.meteor") #&& !Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/package.js")
       BuildSessions.update session._id,
         $set:
           status: 'Unsupported'
           message: 'Not a Meteor repository'
           timestamp: Date.now()
       return
+
+    env = _.extend process.env,
+      METEOR_VERSION: 'something?'
+      GH_API_TOKEN: Meteor.settings.ghApiToken
+      ORG_PREFIX: Meteor.settings.orgName
+      ORG_REVERSE_URL: Meteor.settings.orgReverseUrl
+      REPO: repo
+      ORIG_DIR: fr+'../../private'
+      DEV_SERVER: Meteor.settings.devServer
+      BUILD_DIR: buildDir
+      STAGE_DIR: stageDir
+
     # stage.name - name of stage, for ui
     # stage.cmd - shell command to execute
     # stage.errorCallback - callback function with which to detect an error or
@@ -127,6 +140,30 @@ class @BuildProjectJob extends ExecJob
            spacejam test-packages ./
           fi
         """
+      ,
+        name: 'Building Meteor app'
+        cmd:
+          Assets.getText('includes/meteor/meteorFunctions.sh') +
+          """
+            buildMeteor
+          """
+        env: env
+      ,
+        name: 'Building iOS app'
+        cmd:
+          Assets.getText('includes/meteor/iosFunctions.sh') +
+          """
+            buildIos
+          """
+        env: env
+      ,
+        name: 'Build Android app'
+        cmd:
+          Assets.getText('includes/meteor/meteorFunctions.sh') +
+          """
+            buildAndroid
+          """
+        env: env
       ]
 
     for s in stages
@@ -134,15 +171,21 @@ class @BuildProjectJob extends ExecJob
         cd #{fr}/sandbox/build/#{repo}
         #{s.cmd}
       """
+      @params.env = s.env
       BuildSessions.update session._id,
         $set:
           message: s.name
+      console.log "=== begin stage #{s.name} (#{repo}) ==="
       ex = super()
-      console.log "stage #{s.name}"
       console.log ex.stdout
+      if ex.code != 0
+        console.log 'FAILURE'
+      else
+        console.log 'SUCCESS'
+      console.log "=== end stage #{s.name} (#{repo}) ==="
 
       if ex.code != 0
-        msg = (s.errorMessage? && s.errorMessage(ex.stdout)) || "#{s.cmd} returned exit code #{ex.code}"
+        msg = if s.errorMessage? then s.errorMessage(ex.stdout) else "#{s.name} returned exit code #{ex.code}"
         check msg, String
         BuildSessions.update session._id,
           $set:

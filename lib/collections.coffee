@@ -4,6 +4,8 @@
     type: String
   gitUrl:
     type: String
+  pushedAt:
+    type: new Date()
 
 @BuildSessions = new Mongo.Collection 'buildSessions'
 @BuildSessions.attachSchema new SimpleSchema

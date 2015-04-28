@@ -11,6 +11,7 @@ Have a settings.json file that looks something like this:
     {
       "ghApiToken": "createYourToken",
       "orgName": "UK-AS-HIVE",
+      "orgReverseUrl": "edu.uky.as",
       "appsServer": "https://apps.domain.com",
       "devServer": "https://apps-dev.domain.com"
     }

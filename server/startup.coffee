@@ -12,20 +12,22 @@ getReposFromGithub = ->
   repos = JSON.parse req.content
 
   repos = _.map repos, (r) ->
-    _.pick r, 'name','clone_url','private'
+    _.pick r, 'name','clone_url','private','pushed_at'
 
   _.each repos, (r) ->
     Projects.upsert {name: r.name},
       $set:
         gitUrl: r.clone_url
         status: 'Pending'
-        lastCheck: Date.now()
+        pushedAt: Date.parse(r.pushed_at)
 
   console.log 'got repo list from Github'
 
 scheduleBuildAllProjects = ->
   Projects.find({}).forEach (proj) ->
-    Meteor.call 'buildProject', proj._id
+    # Only schedule a build if one isnt already pending
+    if not Jobs.findOne({name: 'BuildProjectJob', 'params.projectId': proj._id})?
+      Meteor.call 'buildProject', proj._id
 
 Meteor.startup ->
   if not Npm.require('cluster').isMaster then return
