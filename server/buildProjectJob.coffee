@@ -189,8 +189,8 @@ class @BuildProjectJob extends ExecJob
         check msg, String
         BuildSessions.update session._id,
           $set:
-             status: 'Fail'
-             message: msg
+            status: 'Fail'
+            message: msg
           $push:
             stages:
               name: s.name
