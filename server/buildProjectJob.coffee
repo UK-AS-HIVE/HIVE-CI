@@ -41,7 +41,7 @@ class @BuildProjectJob extends ExecJob
         git reset --hard
         git checkout --
         git clean -dff
-        git pull
+        git fetch
       else
         git clone --depth=1 #{url}
         cd #{repo}
