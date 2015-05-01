@@ -20,7 +20,7 @@ Template.default.events
     Meteor.call 'buildProject', @_id
 
 Meteor.startup ->
-  Meteor.setTimeout ->
+  Meteor.setInterval ->
     Session.set 'tick', Date.now()
   , 1000
 

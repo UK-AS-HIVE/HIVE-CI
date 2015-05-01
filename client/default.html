@@ -6,7 +6,7 @@
           <td>
             <a href="/project/{{name}}">{{name}}</a><br/>
             <small>{{gitUrl}}</small><br/>
-            <small>Updated: {{moment pushedAt}}</small><br/>
+            <small>Pushed: {{moment pushedAt}}</small><br/>
 
           </td>
           <td>
@@ -17,7 +17,7 @@
                   {{git.commitHash}}<br/>
                   {{git.committerName}}: {{git.commitMessage}}<br/>
                 {{/if}}
-                Built: {{moment buildSession.lastCheck}}<br/>
+                Updated: {{moment timestamp}}<br/>
                 {{#if message}}{{message}}<br/>{{/if}}
               </small>
             {{/with}}
