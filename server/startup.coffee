@@ -33,6 +33,12 @@ Meteor.startup ->
   if not Npm.require('cluster').isMaster then return
   if not Meteor.settings.ghApiToken? then return
 
-  getReposFromGithub()
-  scheduleBuildAllProjects()
+  update = ->
+    getReposFromGithub()
+    scheduleBuildAllProjects()
+
+  SyncedCron.add
+    name: 'build all projects'
+    schedule: (p) -> p.text 'every 15 minutes'
+    job: update
 

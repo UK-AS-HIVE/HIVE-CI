@@ -15,3 +15,4 @@ http
 reywood:publish-composite
 differential:workers
 mrt:moment
+percolate:synced-cron
