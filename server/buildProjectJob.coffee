@@ -103,6 +103,7 @@ class @BuildProjectJob extends ExecJob
       DEV_SERVER: Meteor.settings.devServer
       BUILD_DIR: buildDir
       STAGE_DIR: stageDir
+      ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
 
     # stage.name - name of stage, for ui
     # stage.cmd - shell command to execute
