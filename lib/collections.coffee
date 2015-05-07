@@ -15,7 +15,7 @@
   #  type: String
   timestamp:
     type: new Date()
-    defaultValue: new Date()
+    defaultValue: Date.now
   status:
     type: String
     allowedValues: ['Pass', 'Fail', 'Pending', 'Building', 'Unsupported', 'Error']
