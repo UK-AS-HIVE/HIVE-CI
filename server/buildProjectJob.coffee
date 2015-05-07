@@ -124,7 +124,7 @@ class @BuildProjectJob extends ExecJob
       ,
         name: 'jshint'
         cmd: """
-            JF=`find . -name "*.js" | grep -v .meteor | grep -v packages`
+            JF=`find . -name "*.js" | grep -v .meteor | grep -v packages | grep -v .min.js`
             test -z "${JF}" || jshint ${JF}
           """
         errorMessage: (out) ->
