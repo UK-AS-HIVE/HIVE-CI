@@ -85,14 +85,64 @@ class @BuildProjectJob extends ExecJob
           name: 'Fetch'
           stdout: out
 
-    if !Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/.meteor") #&& !Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/package.js")
+    stages = @getBuildStages fr, repo, buildDir, stageDir
+
+    if !stages
       BuildSessions.update session._id,
         $set:
           status: 'Unsupported'
-          message: 'Not a Meteor repository'
+          message: 'Not a supported type of repository'
           timestamp: Date.now()
       return
 
+    for s in stages
+      @params.cmd = """
+        cd #{fr}/sandbox/build/#{repo}
+        #{s.cmd}
+      """
+      @params.env = s.env
+      BuildSessions.update session._id,
+        $set:
+          message: s.name
+      console.log "=== begin stage #{s.name} (#{repo}) ==="
+      ex = super()
+      console.log ex.stdout
+      if ex.code != 0
+        console.log 'FAILURE'
+      else
+        console.log 'SUCCESS'
+      console.log "=== end stage #{s.name} (#{repo}) ==="
+
+      if ex.code != 0
+        msg = if s.errorMessage? then s.errorMessage(ex.stdout) else "#{s.name} returned exit code #{ex.code}"
+        check msg, String
+        BuildSessions.update session._id,
+          $set:
+            status: 'Fail'
+            message: msg
+          $push:
+            stages:
+              name: s.name
+              stdout: ex.stdout
+        return
+
+    # TODO: deploy
+    # TODO: notify
+
+    BuildSessions.update session._id,
+      $set:
+        status: 'Pass'
+        message: 'All phases successful'
+        timestamp: Date.now()
+
+  # Identifies type of project and returns an array of build stages
+  # stage.name - name of stage, for ui
+  # stage.cmd - shell command to execute
+  # stage.errorCallback - callback function with which to detect an error or
+  #   verify proper output of executed cmd.  will be called with a single
+  #   parameter, the stdout string of the executed process, and should return 0
+  #   for no error or any other value for error.
+  getBuildStages: (fr, repo, buildDir, stageDir) ->
     env = _.extend process.env,
       METEOR_VERSION: 'something?'
       GH_API_TOKEN: Meteor.settings.ghApiToken
@@ -105,14 +155,9 @@ class @BuildProjectJob extends ExecJob
       STAGE_DIR: stageDir
       ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
 
-    # stage.name - name of stage, for ui
-    # stage.cmd - shell command to execute
-    # stage.errorCallback - callback function with which to detect an error or
-    #   verify proper output of executed cmd.  will be called with a single
-    #   parameter, the stdout string of the executed process, and should return 0
-    #   for no error or any other value for error.
-    stages =
-      [
+    if Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/.meteor")
+      # Meteor app
+      return [
         name: 'CoffeeLint'
         cmd: """
             CF=`find . -name "*.coffee" | grep -v .meteor | grep -v packages`
@@ -166,41 +211,27 @@ class @BuildProjectJob extends ExecJob
           """
         env: env
       ]
+    else if Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/package.js")
+      return [
+        name: 'CoffeeLint'
+        cmd: """
+            CF=`find . -name "*.coffee"`
+            test -z "${CF}" || coffeelint ${CF}
+          """
+        errorMessage: (out) ->
+          clErrors = out?.trim().split('\n').pop().match(/\ [0-9]{1,} errors?/)?.shift()?.trim()
+          "CoffeeLint found #{clErrors}"
+      ,
+        name: 'jshint'
+        cmd: """
+            JF=`find . -name "*.js" | grep -v .min.js`
+            test -z "${JF}" || jshint ${JF}
+          """
+        errorMessage: (out) ->
+          "jshint found " + out?.trim().split('\n').pop()
+      ,
+        name: 'spacejam'
+        cmd: "spacejam test-packages ./"
+      ]
 
-    for s in stages
-      @params.cmd = """
-        cd #{fr}/sandbox/build/#{repo}
-        #{s.cmd}
-      """
-      @params.env = s.env
-      BuildSessions.update session._id,
-        $set:
-          message: s.name
-      console.log "=== begin stage #{s.name} (#{repo}) ==="
-      ex = super()
-      console.log ex.stdout
-      if ex.code != 0
-        console.log 'FAILURE'
-      else
-        console.log 'SUCCESS'
-      console.log "=== end stage #{s.name} (#{repo}) ==="
-
-      if ex.code != 0
-        msg = if s.errorMessage? then s.errorMessage(ex.stdout) else "#{s.name} returned exit code #{ex.code}"
-        check msg, String
-        BuildSessions.update session._id,
-          $set:
-            status: 'Fail'
-            message: msg
-          $push:
-            stages:
-              name: s.name
-              stdout: ex.stdout
-        return
-
-    BuildSessions.update session._id,
-      $set:
-        status: 'Pass'
-        message: 'All phases successful'
-        timestamp: Date.now()
 
