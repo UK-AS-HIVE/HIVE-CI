@@ -85,6 +85,17 @@ class @BuildProjectJob extends ExecJob
           name: 'Fetch'
           stdout: out
 
+    # TODO: better way of checking for already-built commit?
+    previous = BuildSessions.find({projectId: @params.projectId}, {sort: {timestamp: -1}, limit: 2}).fetch()
+    if previous.length >= 2 && hash == previous.pop().git.commitHash
+      console.log "No changes since last check"
+      BuildSessions.remove {_id: session._id}
+      return
+
+    # TODO: is there a better way to store per-app configuration than in HIVE-CI settings.json?
+    if Meteor.settings.appSettings[repo]?
+      Npm.require('fs').writeFileSync buildDir + "/#{repo}/settings.json", JSON.stringify(Meteor.settings.appSettings[repo])
+
     stages = @getBuildStages fr, repo, buildDir, stageDir
 
     if !stages

@@ -39,6 +39,6 @@ Meteor.startup ->
 
   SyncedCron.add
     name: 'build all projects'
-    schedule: (p) -> p.text 'every 15 minutes'
+    schedule: (p) -> p.text 'every 5 minutes'
     job: update
 
