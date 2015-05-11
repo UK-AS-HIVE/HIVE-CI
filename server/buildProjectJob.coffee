@@ -126,7 +126,6 @@ class @BuildProjectJob extends ExecJob
               stdout: ex.stdout
         return
 
-    # TODO: deploy
     # TODO: notify
 
     BuildSessions.update session._id,
@@ -223,15 +222,17 @@ class @BuildProjectJob extends ExecJob
 
             echo "Deploying #{repo} to #{Meteor.settings.devServer}..."
             cd #{stageDir}
-            rsync -avz -e ssh var/www root@#{Meteor.settings.devServer}:/var/www
+            rsync -avz -e ssh var/www/ root@#{Meteor.settings.devServer}:/var/www
             rsync -avz --delete --exclude 'programs/server/node_modules' --exclude 'files/' -e ssh var/meteor/#{repo} root@#{Meteor.settings.devServer}:/var/meteor
             rsync -avz -e ssh etc/nginx/sites-available/meteordev.conf root@#{Meteor.settings.devServer}:/etc/nginx/sites-available/meteordev.conf
             rsync -avz -e ssh etc/init.d/ root@#{Meteor.settings.devServer}:/etc/init.d
 
             echo "Adding meteor-#{repo} to default runlevel and restarting"
             ssh root@#{Meteor.settings.devServer} << ENDSSH
+              cd /var/meteor/#{repo}/programs/server && npm install
               update-rc.d meteor-#{repo} defaults
               /etc/init.d/meteor-#{repo} restart || /etc/init.d/meteor-#{repo} start
+              service nginx restart
 ENDSSH
           """
       ]
