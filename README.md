@@ -12,7 +12,7 @@ Have a settings.json file that looks something like this:
       "orgName": "UK-AS-HIVE",
       "orgReverseUrl": "edu.uky.as",
       "appsServer": "https://apps.domain.com",
-      "devServer": "https://apps-dev.domain.com"
+      "devServer": "apps-dev.domain.com"
     }
 
 Make sure you have dependencies installed:

@@ -150,7 +150,7 @@ class @BuildProjectJob extends ExecJob
       ORG_REVERSE_URL: Meteor.settings.orgReverseUrl
       REPO: repo
       ORIG_DIR: fr+'../../private'
-      DEV_SERVER: Meteor.settings.devServer
+      DEV_SERVER: 'https://' + Meteor.settings.devServer
       BUILD_DIR: buildDir
       STAGE_DIR: stageDir
       ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
@@ -210,6 +210,30 @@ class @BuildProjectJob extends ExecJob
             buildAndroid
           """
         env: env
+      ,
+        name: 'Deploy to dev'
+        cmd:
+          Assets.getText('includes/deploy/generateInitd.sh') +
+          Assets.getText('includes/deploy/generateNginx.sh') +
+          Assets.getText('includes/deploy/generateHtmlindex.sh') +
+          """
+            generateNginx
+            generateInitd
+            generateHtmlindex
+
+            echo "Deploying #{repo} to #{Meteor.settings.devServer}..."
+            cd #{stageDir}
+            rsync -avz -e ssh var/www root@#{Meteor.settings.devServer}:/var/www
+            rsync -avz --delete --exclude 'programs/server/node_modules' --exclude 'files/' -e ssh var/meteor/#{repo} root@#{Meteor.settings.devServer}:/var/meteor
+            rsync -avz -e ssh etc/nginx/sites-available/meteordev.conf root@#{Meteor.settings.devServer}:/etc/nginx/sites-available/meteordev.conf
+            rsync -avz -e ssh etc/init.d/ root@#{Meteor.settings.devServer}:/etc/init.d
+
+            echo "Adding meteor-#{repo} to default runlevel and restarting"
+            ssh root@#{Meteor.settings.devServer} << ENDSSH
+              update-rc.d meteor-#{repo} defaults
+              /etc/init.d/meteor-#{repo} restart || /etc/init.d/meteor-#{repo} start
+ENDSSH
+          """
       ]
     else if Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/package.js")
       return [

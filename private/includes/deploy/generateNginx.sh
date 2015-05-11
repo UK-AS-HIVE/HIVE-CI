@@ -1,10 +1,8 @@
-#!/bin/bash
-
 function generateNginx {
   #Seems like these EOF's have to be not indented, which makes this formatting/indentation a nightmare. Sorry about that.
   APPS_DIR="$STAGE_DIR/var/meteor"
   mkdir -p ${APPS_DIR}
-  DIRS=`ls -l $APPS_DIR | egrep '^d' | awk '{print $9}'`
+  DIRS=`ls -lU $APPS_DIR | egrep '^d' | awk '{print $9}'`
   PORT=3000
   NGINX_DIR="${STAGE_DIR}/etc/nginx/sites-available"
   

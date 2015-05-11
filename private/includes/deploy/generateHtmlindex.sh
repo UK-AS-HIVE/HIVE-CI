@@ -1,4 +1,3 @@
-#!/bin/bash
 function generateHtmlindex {
   mkdir -p ${STAGE_DIR}/var/www
   PLISTS=$(ls ${STAGE_DIR}/var/www/*.plist | grep -o -e "[a-zA-Z0-9_-]\+\.plist$")
@@ -24,3 +23,4 @@ EOF
 </html>
 EOF
 }
+
