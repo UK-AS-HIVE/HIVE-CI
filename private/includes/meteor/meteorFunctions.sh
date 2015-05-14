@@ -61,8 +61,9 @@ function buildMeteor() {
   cd ${BUILD_DIR}/${REPO}-build
 
   #find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#"ROOT_URL":"'"${DEV_SERVER}"'/"#ROOT_URL":"'"${DEV_SERVER}/${REPO}/"'"#g'
-  find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#"ROOT_URL_PATH_PREFIX":""#"ROOT_URL_PATH_PREFIX":"/'"${REPO}"'"#g'
-  find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#"DDP_DEFAULT_CONNECTION_URL":"'"${DEV_SERVER}"'"#"DDP_DEFAULT_CONNECTION_URL":"'"${DEV_SERVER}/${REPO}"'"#g'
+  RAW_DEV_SERVER=`echo ${DEV_SERVER} | gsed "s#https\?://##"`
+  find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#%22ROOT_URL_PATH_PREFIX%22%3A%22%22#%22ROOT_URL_PATH_PREFIX%22%3A%22%2F'"${REPO}"'%22#g'
+  find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#%22DDP_DEFAULT_CONNECTION_URL%22%3A%22https%3A%2F%2F'"${RAW_DEV_SERVER}"'%22#%22DDP_DEFAULT_CONNECTION_URL%22%3A%22https%3A%2F%2F'"${RAW_DEV_SERVER}"'%2F'"${REPO}"'%22#g'
 }
 
 function buildAndroid() {
@@ -79,9 +80,9 @@ function buildAndroid() {
 # Execute from within the main directory before building
 function meteorApplyDevPatches() {
   echo "Patching html href and src attributes for relative routes"
-  find . -depth 1 -name "*.html" | xargs gsed -i 's/href="\//href="\/'"${REPO}"'\//g'
+  find . -depth 1 -name "*.html" | xargs gsed -i 's/href="\//href="{{rootAppUrl}}\//g'
   find . -depth 1 -name "*.html" | xargs gsed -i 's/src="\//src="\/'"${REPO}"'\//g'
-  find client -name "*.html" -type f -print0 | xargs -0 gsed -i 's/href="\//href="\/'"${REPO}"'\//g'
+  find client -name "*.html" -type f -print0 | xargs -0 gsed -i 's/href="\//href="{{rootAppUrl}}\//g'
   find client -name "*.html" -type f -print0 | xargs -0 gsed -i 's/src="\//src="\/'"${REPO}"'\//g'
 
   echo "Patching css url() references for relative routes"

@@ -37,6 +37,8 @@ Meteor.startup ->
     getReposFromGithub()
     scheduleBuildAllProjects()
 
+  getReposFromGithub()
+
   SyncedCron.add
     name: 'build all projects'
     schedule: (p) -> p.text 'every 5 minutes'
