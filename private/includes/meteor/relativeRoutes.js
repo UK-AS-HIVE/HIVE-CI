@@ -30,12 +30,14 @@
       return str.replace(/([/\\.?*()^${}|[\]])/g, '\\$1');
   }
 
-  Template.registerHelper('rootAppUrl', function() {
-    if (Meteor.isCordova) {
-      return ''; //__meteor_runtime_config__.ROOT_URL_PATH_PREFIX.replace(/\/$/, '');
-    } else {
-      return (__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX).replace(/\/$/, '');
-    }
-  });
+  if (Meteor.isClient) {
+    Template.registerHelper('rootAppUrl', function() {
+      if (Meteor.isCordova) {
+        return ''; //__meteor_runtime_config__.ROOT_URL_PATH_PREFIX.replace(/\/$/, '');
+      } else {
+        return (__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX).replace(/\/$/, '');
+      }
+    });
+  }
 
 })();
