@@ -13,6 +13,11 @@ Have a settings.json file that looks something like this:
       "orgReverseUrl": "edu.uky.as",
       "appsServer": "https://apps.domain.com",
       "devServer": "apps-dev.domain.com"
+      "appSettings": {
+        "MyApp": {
+          "whatever": "..."
+        }
+      }
     }
 
 Make sure you have dependencies installed:
