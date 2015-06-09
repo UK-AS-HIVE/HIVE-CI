@@ -242,7 +242,7 @@ class @BuildProjectJob extends ExecJob
             ssh root@#{Meteor.settings.devServer} << ENDSSH
               cd /var/meteor/#{repo}/programs/server && npm install
               update-rc.d meteor-#{repo} defaults
-              /etc/init.d/meteor-#{repo} restart || /etc/init.d/meteor-#{repo} start
+              /etc/init.d/meteor-#{repo} stop; /etc/init.d/meteor-#{repo} start
               service nginx restart
 ENDSSH
           """
