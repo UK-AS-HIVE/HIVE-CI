@@ -86,7 +86,7 @@ class @BuildProjectJob extends ExecJob
           stdout: out
 
     # TODO: is there a better way to store per-app configuration than in HIVE-CI settings.json?
-    if Meteor.settings.appSettings[repo]?
+    if Meteor.settings.appSettings? and Meteor.settings.appSettings[repo]?
       Npm.require('fs').writeFileSync buildDir + "/#{repo}/settings.json", JSON.stringify(Meteor.settings.appSettings[repo])
 
     # TODO: better way of checking for already-built commit?
