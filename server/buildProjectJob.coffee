@@ -91,7 +91,7 @@ class @BuildProjectJob extends ExecJob
 
     # TODO: better way of checking for already-built commit?
     previous = BuildSessions.find({projectId: @params.projectId}, {sort: {timestamp: -1}, limit: 2}).fetch()
-    if previous.length >= 2 && hash == previous.pop().git.commitHash
+    if previous.length >= 2 && hash == previous.pop().git?.commitHash
       console.log "No changes since last check"
       BuildSessions.remove {_id: session._id}
       return
