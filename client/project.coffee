@@ -20,5 +20,5 @@ Template.project.helpers
 
 Template.project.events
   'click .run-job-button': (e, tpl) ->
-    Meteor.call 'buildProject', @_id
+    Meteor.call 'buildProject', @_id, true
 

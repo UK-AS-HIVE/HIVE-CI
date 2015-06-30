@@ -17,7 +17,7 @@ Template.default.helpers
 
 Template.default.events
   'click .run-job-button': (e, tpl) ->
-    Meteor.call 'buildProject', @_id
+    Meteor.call 'buildProject', @_id, true
 
 Meteor.startup ->
   Meteor.setInterval ->

@@ -1,9 +1,10 @@
 Meteor.methods
-  buildProject: (projectId) ->
+  buildProject: (projectId, forceRebuild) ->
     console.log "scheduling BuildProjectJob for #{projectId}"
     #Projects.update projectId, {$set: {status: 'Pending'}}
     Job.push new BuildProjectJob
       projectId: projectId
+      forceRebuild: forceRebuild
     BuildSessions.insert
       projectId: projectId
       status: 'Pending'
@@ -90,11 +91,12 @@ class @BuildProjectJob extends ExecJob
       Npm.require('fs').writeFileSync buildDir + "/#{repo}/settings.json", JSON.stringify(Meteor.settings.appSettings[repo])
 
     # TODO: better way of checking for already-built commit?
-    previous = BuildSessions.find({projectId: @params.projectId}, {sort: {timestamp: -1}, limit: 2}).fetch()
-    if previous.length >= 2 && hash == previous.pop().git?.commitHash
-      console.log "No changes since last check"
-      BuildSessions.remove {_id: session._id}
-      return
+    unless @params.forceRebuild
+      previous = BuildSessions.find({projectId: @params.projectId}, {sort: {timestamp: -1}, limit: 2}).fetch()
+      if previous.length >= 2 && hash == previous.pop().git?.commitHash
+        console.log "No changes since last check"
+        BuildSessions.remove {_id: session._id}
+        return
 
     stages = @getBuildStages fr, repo, buildDir, stageDir
 
