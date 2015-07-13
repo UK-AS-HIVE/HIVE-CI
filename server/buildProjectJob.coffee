@@ -177,7 +177,7 @@ class @BuildProjectJob extends ExecJob
       ORG_REVERSE_URL: Meteor.settings.orgReverseUrl
       REPO: repo
       ORIG_DIR: fr+'../../private'
-      DEV_SERVER: deployment.targetHost
+      DEV_SERVER: deployment.targetHost.replace(/\/$/, '') + '/'
       BUILD_DIR: buildDir
       STAGE_DIR: stageDir
       ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
@@ -247,8 +247,8 @@ class @BuildProjectJob extends ExecJob
           Assets.getText('includes/deploy/generateNginx.sh') +
           Assets.getText('includes/deploy/generateHtmlindex.sh') +
           """
-            generateNginx
             generateInitd
+            generateNginx
             generateHtmlindex
 
             echo "Deploying #{repo} to #{deployment.targetHost}..."

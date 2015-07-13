@@ -33,22 +33,16 @@ EOF
 
     access_log /var/log/nginx/${TARGET_HOSTNAME}.access.log;
     error_log /var/log/nginx/${TARGET_HOSTNAME}.error.log;
-
-    location / {
-      root /var/www;
-      index index.html;
-      try_files \$uri \$uri/ /index.html;
-    }
 EOF
-
-
 
   for DIR in $DIRS
   do
+    APP_PATH=`grep ROOT_URL ${STAGE_DIR}/etc/init.d/meteor-${DIR} | gsed -E "s#^.+https?://[^/]+##"`
+    APP_PORT=`grep PORT ${STAGE_DIR}/etc/init.d/meteor-${DIR} | gsed -E "s#^.+PORT=##"`
     cat << EOF >> $NGINX_DIR/${TARGET_HOSTNAME}.conf
 
-    location /$DIR/ {
-      proxy_pass http://localhost:$PORT;
+    location ${APP_PATH} {
+      proxy_pass http://localhost:${APP_PORT};
     }
 
 EOF
