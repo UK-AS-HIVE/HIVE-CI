@@ -1,21 +1,27 @@
 Meteor.methods
   buildProject: (projectId, forceRebuild) ->
     console.log "scheduling BuildProjectJob for #{projectId}"
+    Deployments.find({projectId: projectId}).forEach (d) ->
+      Meteor.call 'buildDeployment', d, forceRebuild
     #Projects.update projectId, {$set: {status: 'Pending'}}
+  buildDeployment: (deployment, forceRebuild) ->
     Job.push new BuildProjectJob
-      projectId: projectId
+      deployment: deployment
       forceRebuild: forceRebuild
     BuildSessions.insert
-      projectId: projectId
+      projectId: deployment.projectId
+      deploymentId: deployment._id
+      targetHost: deployment.targetHost
       status: 'Pending'
       message: 'Scheduled to build...'
       timestamp: Date.now()
 
 class @BuildProjectJob extends ExecJob
   handleJob: ->
-    proj = Projects.findOne(@params.projectId)
-    session = BuildSessions.findOne({projectId: @params.projectId}, {sort: {timestamp: -1}})
-    console.log '*** building project '+proj.name+' ***'
+    deployment = @params.deployment
+    proj = Projects.findOne(deployment.projectId)
+    session = BuildSessions.findOne({deploymentId: deployment._id}, {sort: {timestamp: -1}})
+    console.log '*** building project '+proj.name+' for '+deployment.targetHost+' ***'
     #Projects.update {_id: @params.projectId}, {$set: {status: 'Building'}}
 
     BuildSessions.update session._id,
@@ -26,8 +32,9 @@ class @BuildProjectJob extends ExecJob
 
     fr = FileRegistry.getFileRoot()
 
+    targetUrl = Npm.require('url').parse(deployment.targetHost)
     buildDir = fr + '/sandbox/build'
-    stageDir = fr + '/sandbox/stage'
+    stageDir = fr + '/sandbox/stage/' + targetUrl.hostname
 
     orgAndRepo = proj.gitUrl.match(/([a-zA-Z0-9-_.]+)\/([a-zA-Z0-9-_.]+)$/)
     org = orgAndRepo[1]
@@ -49,7 +56,9 @@ class @BuildProjectJob extends ExecJob
       fi
 
       git fetch origin '+refs/heads/*:refs/remotes/origin/*'
-      git checkout `git log --all --format="%H" -1`
+      #git checkout `git log --all --format="%H" -1`
+      git checkout #{deployment.branch}
+      git pull
       git log --all --format="%H" -1
       git log --all --format="%s" -1
       git log --all --format="%cn" -1
@@ -87,18 +96,20 @@ class @BuildProjectJob extends ExecJob
           stdout: out
 
     # TODO: is there a better way to store per-app configuration than in HIVE-CI settings.json?
+    if deployment.settings?
+      Npm.require('fs').writeFileSync buildDir + "/#{repo}/settings.json", deployment.settings
     if Meteor.settings.appSettings? and Meteor.settings.appSettings[repo]?
       Npm.require('fs').writeFileSync buildDir + "/#{repo}/settings.json", JSON.stringify(Meteor.settings.appSettings[repo])
 
     # TODO: better way of checking for already-built commit?
     unless @params.forceRebuild
-      previous = BuildSessions.find({projectId: @params.projectId}, {sort: {timestamp: -1}, limit: 2}).fetch()
+      previous = BuildSessions.find({deploymentId: @params.deployment._id}, {sort: {timestamp: -1}, limit: 2}).fetch()
       if previous.length >= 2 && hash == previous.pop().git?.commitHash
         console.log "No changes since last check"
         BuildSessions.remove {_id: session._id}
         return
 
-    stages = @getBuildStages fr, repo, buildDir, stageDir
+    stages = @getBuildStages fr, deployment, proj, repo, buildDir, stageDir
 
     if !stages
       BuildSessions.update session._id,
@@ -154,7 +165,11 @@ class @BuildProjectJob extends ExecJob
   #   verify proper output of executed cmd.  will be called with a single
   #   parameter, the stdout string of the executed process, and should return 0
   #   for no error or any other value for error.
-  getBuildStages: (fr, repo, buildDir, stageDir) ->
+  getBuildStages: (fr, deployment, project, repo, buildDir, stageDir) ->
+    targetUrl = Npm.require('url').parse(deployment.targetHost)
+    sshHost = targetUrl.hostname
+    sshUser = deployment.sshConfig?.user || 'root'
+    sshPort = deployment.sshConfig?.port || 22
     env = _.extend process.env,
       METEOR_VERSION: 'something?'
       GH_API_TOKEN: Meteor.settings.ghApiToken
@@ -162,10 +177,13 @@ class @BuildProjectJob extends ExecJob
       ORG_REVERSE_URL: Meteor.settings.orgReverseUrl
       REPO: repo
       ORIG_DIR: fr+'../../private'
-      DEV_SERVER: 'https://' + Meteor.settings.devServer
+      DEV_SERVER: deployment.targetHost
       BUILD_DIR: buildDir
       STAGE_DIR: stageDir
       ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
+      TARGET_HOSTNAME: sshHost
+      TARGET_PROTOCOL: targetUrl.protocol
+      TARGET_PORT: targetUrl.port || if targetUrl.protocol == 'https:' then 443 else 80
 
     if Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/.meteor")
       # Meteor app
@@ -223,7 +241,7 @@ class @BuildProjectJob extends ExecJob
           """
         env: env
       ,
-        name: 'Deploy to dev'
+        name: "Deploying to #{deployment.targetHost}"
         cmd:
           Assets.getText('includes/deploy/generateInitd.sh') +
           Assets.getText('includes/deploy/generateNginx.sh') +
@@ -233,15 +251,15 @@ class @BuildProjectJob extends ExecJob
             generateInitd
             generateHtmlindex
 
-            echo "Deploying #{repo} to #{Meteor.settings.devServer}..."
+            echo "Deploying #{repo} to #{deployment.targetHost}..."
             cd #{stageDir}
-            rsync -avz -e ssh var/www/ root@#{Meteor.settings.devServer}:/var/www
-            rsync -avz --delete --exclude 'programs/server/node_modules' --exclude 'files/' -e ssh var/meteor/#{repo} root@#{Meteor.settings.devServer}:/var/meteor
-            rsync -avz -e ssh etc/nginx/sites-available/meteordev.conf root@#{Meteor.settings.devServer}:/etc/nginx/sites-available/meteordev.conf
-            rsync -avz -e ssh etc/init.d/ root@#{Meteor.settings.devServer}:/etc/init.d
+            rsync -avz -e "ssh -p #{sshPort} -oBatchMode=yes" var/www/ #{sshUser}@#{sshHost}:/var/www
+            rsync -avz --delete --exclude 'programs/server/node_modules' --exclude 'files/' -e "ssh -p #{sshPort} -oBatchmode=yes" var/meteor/#{repo} #{sshUser}@#{sshHost}:/var/meteor
+            rsync -avz -e "ssh -p #{sshPort} -oBatchMode=yes" etc/nginx/sites-available/#{sshHost}.conf #{sshUser}@#{sshHost}:/etc/nginx/sites-available/#{sshHost}.conf
+            rsync -avz -e "ssh -p #{sshPort} -oBatchMode=yes" etc/init.d/ #{sshUser}@#{sshHost}:/etc/init.d
 
             echo "Adding meteor-#{repo} to default runlevel and restarting"
-            ssh root@#{Meteor.settings.devServer} << ENDSSH
+            ssh -p #{sshPort} -oBatchMode=yes #{sshUser}@#{sshHost} << ENDSSH
               cd /var/meteor/#{repo}/programs/server && npm install
               update-rc.d meteor-#{repo} defaults
               /etc/init.d/meteor-#{repo} stop; /etc/init.d/meteor-#{repo} start

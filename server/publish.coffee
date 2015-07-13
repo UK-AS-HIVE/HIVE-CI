@@ -10,7 +10,14 @@ Meteor.publishComposite 'projectDetail', (projectName) ->
   find: ->
     Projects.find name: projectName
   children: [
-    find: (project) ->
-      BuildSessions.find({projectId: project._id})
+    {
+      find: (project) ->
+        BuildSessions.find({projectId: project._id})
+    }
+  ,
+    {
+      find: (project) ->
+        Deployments.find({projectId: project._id})
+    }
   ]
 

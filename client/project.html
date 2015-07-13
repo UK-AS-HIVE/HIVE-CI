@@ -1,17 +1,59 @@
 <template name="project">
-  <p>
-    <h1>{{name}}</h1>
-    {{gitUrl}}<br/>
-  </p>
+  <div class="col-md-6">
+    <p>
+      <h1>{{name}}</h1>
+      {{gitUrl}}<br/>
+    </p>
+
+
+
+    <a href="{{gitUrl}}" target="_blank" class="btn btn-default">Github <img height="20px" src="/GitHub-Mark/PNG/GitHub-Mark-32px.png"></a>
+  </div>
+
+  <div class="col-md-6">
+    <h4>Deployment</h4>
+    {{#afModal class="btn btn-primary" collection="Deployments" operation="insert"}}
+      Add target
+    {{/afModal}}
+    {{> autoformModals}}
+    <table class="table">
+      {{#if deployment}}
+      <thead>
+        <tr>
+          <th class="col-md-4">Deployment URL</th>
+          <th class="col-md-4">Git branch</th>
+          <th class="col-md-2"></th>
+          <th class="col-md-2"></th>
+        </tr>
+      </thead>
+      {{/if}}
+      <tbody>
+        {{#each deployment}}
+        <tr>
+          <td>{{targetHost}}</td>
+          <td>{{branch}}</td>
+          <td>
+            {{#afModal class="btn btn-primary" collection="Deployments" operation="update" doc=_id}}
+              Edit
+            {{/afModal}}
+          </td>
+          <td>
+            {{#afModal class="btn btn-primary" collection="Deployments" operation="remove" doc=_id}}
+              Delete
+            {{/afModal}}
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
 
   <button class="btn btn-success run-job-button">Run</button>
-
-  <a href="{{gitUrl}}" target="_blank" class="btn btn-default">Github <img height="20px" src="/GitHub-Mark/PNG/GitHub-Mark-32px.png"></a>
-
-
   {{#with mostRecentBuildSession}}
   <div style={{rowStyle this}}>
     <h4>Latest</h4>
+    {{targetHost}}<br/>
     {{status}}<br/>
     <small>
       {{#if git}}
@@ -38,6 +80,7 @@
             <small>{{moment timestamp}}</small>
           </td>
           <td>
+            {{targetHost}}<br/>
             {{status}}<br/>
             <small>
               {{#if git}}

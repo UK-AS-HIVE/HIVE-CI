@@ -17,6 +17,8 @@ Template.project.helpers
     window.requestAnimationFrame ->
       $('textarea').scrollTop(99999)
     _.pluck(@stages, 'stdout').join('\n\n')
+  deployment: ->
+    Deployments.find {projectId: @_id}
 
 Template.project.events
   'click .run-job-button': (e, tpl) ->

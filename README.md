@@ -3,7 +3,7 @@ HIVE-CI
 
 Continuous integration scripts and configuration for HIVE projects. 
 
-### Setup
+### Setting up the CI machine
 
 Have a settings.json file that looks something like this:
 
@@ -28,6 +28,14 @@ Then, assuming you have installed Meteor, type:
     $ meteor --settings=settings.json
 
 Navigate to http://localhost:3000 in your browser to access the dashboard.
+
+### Setting up Meteor host machines
+
+Expected hosting environment is nginx-1.4, node 0.10, mongo 3.0, and postfix on
+Ubuntu 14.04, with imagemagick, ghostscript, and ffmpeg installed.
+
+Vagrant is recommended for quickly setting up a sample environment to deploy
+to, using the Vagrantfile in the repository.
 
 ### Notes
 

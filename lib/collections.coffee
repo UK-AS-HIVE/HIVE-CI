@@ -6,10 +6,73 @@
     type: String
   pushedAt:
     type: new Date()
+    optional: true
+
+@Deployments = new Mongo.Collection 'deployments'
+@Deployments.attachSchema new SimpleSchema
+  projectId:
+    type: String
+    autoform:
+      type: 'select'
+      options: ->
+        Projects.find({},{sort: {name: 1}}).map (p) ->
+          label: p.name, value: p._id
+  targetHost:
+    type: String
+    autoform:
+      label: 'Deploy to URL'
+      placeholder: 'https://...'
+  branch:
+    type: String
+    defaultValue: 'devel'
+    autoform:
+      label: 'Git branch'
+      placeholder: 'devel'
+  settings:
+    type: String
+    autoform:
+      label: 'Settings (JSON)'
+      type: 'textarea'
+      rows: 5
+      placeholder: """
+{
+  "settings": {
+    "foo": "bar"
+  }
+}
+"""
+  sshConfig:
+    type: Object
+    optional: true
+    autoform:
+      label: 'SSH config'
+  'sshConfig.user':
+    type: String
+    optional: true
+    defaultValue: 'root'
+    autoform:
+      label: 'SSH user'
+      placeholder: 'root'
+  'sshConfig.port':
+    type: Number
+    optional: true
+    defaultValue: 22
+    autoform:
+      label: 'SSH port'
+      placeholder: 22
+  env:
+    type: Object
+    optional: true
+    blackbox: true
+    label: 'Environment Variables'
+    autoform:
+      type: 'textarea'
 
 @BuildSessions = new Mongo.Collection 'buildSessions'
 @BuildSessions.attachSchema new SimpleSchema
   projectId:
+    type: String
+  deploymentId:
     type: String
   #jobId:
   #  type: String
@@ -19,6 +82,8 @@
   status:
     type: String
     allowedValues: ['Pass', 'Fail', 'Pending', 'Building', 'Unsupported', 'Error']
+  targetHost:
+    type: String
   message:
     type: String
     optional: true

@@ -54,7 +54,7 @@ start() {
   PATH=/usr/local/bin:\$PATH
   export PORT=$PORT
   export MONGO_URL=mongodb://localhost:27017/$DIR
-  export ROOT_URL=${DEV_SERVER}/${DIR}
+  export ROOT_URL=${DEV_SERVER}
   export MAIL_URL=smtp://localhost:25
 EOF
 
@@ -74,19 +74,19 @@ EOF
 
 restart() {
   echo -n "Restarting \$scriptId"
-  /usr/local/bin/forever restart \$scriptId
+  forever restart \$scriptId
   RETVAL=\$?
 }
 
 stop() {
   echo -n "Shutting down \$scriptId"
-  /usr/local/bin/forever stop \$scriptId
+  forever stop \$scriptId
   RETVAL=\$?
 }
 
 status() {
   echo -n "Status \$scriptId"
-  /usr/local/bin/forever list
+  forever list
   RETVAL=\$?
 }
 

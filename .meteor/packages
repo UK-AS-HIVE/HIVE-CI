@@ -16,3 +16,5 @@ reywood:publish-composite
 differential:workers
 mrt:moment
 percolate:synced-cron
+aldeed:autoform@5.3.2
+yogiben:autoform-modals
