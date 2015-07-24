@@ -6,9 +6,26 @@ function generateInitd {
 
   mkdir -p $STAGE_DIR/etc/init.d/
 
-  for DIR in $DIRS
-  do
-    cat << EOF > $STAGE_DIR/etc/init.d/meteor-$DIR
+  INITD_FILE=${STAGE_DIR}/etc/init.d/meteor-${REPO}
+  echo "INITD_FILE = ${INITD_FILE}"
+  if [[ -e ${INITD_FILE} ]]
+  then
+    PORT=`grep PORT ${INITD_FILE} | grep -o -E "[0-9]+"`
+    echo "This project has been deployed before, using port: ${PORT}"
+  else
+    if [[ "$(ls -A ${STAGE_DIR}/etc/init.d/)" ]]
+    then
+      PORT=`grep PORT ${STAGE_DIR}/etc/init.d/meteor-* | grep -o -E "[0-9]+" | sort -r | head -n 1`
+      PORT=$((PORT+1))
+      echo "This is a new project, using port: ${PORT}"
+    else
+      echo "This is the first project deploying to this server, using port: ${PORT}"
+    fi
+  fi
+
+  DIR=${REPO}
+
+  cat << EOF > ${INITD_FILE}
 #!/bin/bash
 #
 # description: Script to start a meteor application through forever
@@ -58,14 +75,14 @@ start() {
   export MAIL_URL=smtp://localhost:25
 EOF
 
-    if [[ -e "${BUILD_DIR}/${DIR}/settings.json" ]]
-    then
-      echo "Project ${DIR} includes settings.json, converting to environment variable for deployment"
-      SETTINGS=$(cat ${BUILD_DIR}/${DIR}/settings.json | python -c "import json,sys; print json.dumps(sys.stdin.read())[1:-1]")
-      echo "  export METEOR_SETTINGS=\$'${SETTINGS}'" >> $STAGE_DIR/etc/init.d/meteor-$DIR
-    fi
+  if [[ -e "${BUILD_DIR}/${DIR}/settings.json" ]]
+  then
+    echo "Project ${DIR} includes settings.json, converting to environment variable for deployment"
+    SETTINGS=$(cat ${BUILD_DIR}/${DIR}/settings.json | python -c "import json,sys; print json.dumps(sys.stdin.read())[1:-1]")
+    echo "  export METEOR_SETTINGS=\$'${SETTINGS}'" >> ${INITD_FILE}
+  fi
 
-    cat << EOF >> $STAGE_DIR/etc/init.d/meteor-$DIR
+  cat << EOF >> ${INITD_FILE}
 
   forever start --pidFile \$pidfile -l \$logFile -o \$outFile -e \$errFile -a -d --sourceDir \$sourceDir/ main.js
 
@@ -112,7 +129,5 @@ esac
 exit \$RETVAL
 
 EOF
-PORT=$((PORT+1))
-done
 chmod +x ${STAGE_DIR}/etc/init.d/*
 }

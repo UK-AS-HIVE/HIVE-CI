@@ -3,7 +3,6 @@ function generateNginx {
   APPS_DIR="$STAGE_DIR/var/meteor"
   mkdir -p ${APPS_DIR}
   DIRS=`ls -lU $APPS_DIR | egrep '^d' | awk '{print $9}'`
-  PORT=3000
   NGINX_DIR="${STAGE_DIR}/etc/nginx/sites-available"
   
 
@@ -46,7 +45,6 @@ EOF
     }
 
 EOF
-    PORT=$((PORT+1))
   done
 
   cat << EOF >> $NGINX_DIR/${TARGET_HOSTNAME}.conf

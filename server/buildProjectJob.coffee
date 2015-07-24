@@ -33,8 +33,8 @@ class @BuildProjectJob extends ExecJob
     fr = FileRegistry.getFileRoot()
 
     targetUrl = Npm.require('url').parse(deployment.targetHost)
-    buildDir = fr + '/sandbox/build'
-    stageDir = fr + '/sandbox/stage/' + targetUrl.hostname
+    buildDir = fr + 'sandbox/build'
+    stageDir = fr + 'sandbox/stage/' + targetUrl.hostname
 
     orgAndRepo = proj.gitUrl.match(/([a-zA-Z0-9-_.]+)\/([a-zA-Z0-9-_.]+)$/)
     org = orgAndRepo[1]
@@ -179,6 +179,7 @@ class @BuildProjectJob extends ExecJob
       STAGE_DIR: stageDir
       ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
       TARGET_HOSTNAME: sshHost
+      TARGET_PATH: targetUrl.path
       TARGET_PROTOCOL: targetUrl.protocol
       TARGET_PORT: targetUrl.port || if targetUrl.protocol == 'https:' then 443 else 80
 
