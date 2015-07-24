@@ -59,9 +59,9 @@ class @BuildProjectJob extends ExecJob
       #git checkout `git log --all --format="%H" -1`
       git checkout #{deployment.branch}
       git pull
-      git log --all --format="%H" -1
-      git log --all --format="%s" -1
-      git log --all --format="%cn" -1
+      git log --format="%H" -1
+      git log --format="%s" -1
+      git log --format="%cn" -1
     """
     ex = super()
     out = ex.stdout
