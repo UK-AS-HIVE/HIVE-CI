@@ -57,7 +57,7 @@ class @BuildProjectJob extends ExecJob
 
       git fetch origin '+refs/heads/*:refs/remotes/origin/*'
       #git checkout `git log --all --format="%H" -1`
-      git checkout #{deployment.branch}
+      git checkout origin/#{deployment.branch}
       git pull
       git log --format="%H" -1
       git log --format="%s" -1
