@@ -26,7 +26,7 @@ getReposFromGithub = ->
 scheduleBuildAllProjects = ->
   Projects.find({}, {sort: {pushedAt: -1}}).forEach (proj) ->
     # Only schedule a build if one isnt already pending
-    if not Jobs.findOne({name: 'BuildProjectJob', 'params.projectId': proj._id})?
+    if not Jobs.findOne({name: 'BuildProjectJob', 'params.deployment.projectId': proj._id})?
       Meteor.call 'buildProject', proj._id
 
 Meteor.startup ->
