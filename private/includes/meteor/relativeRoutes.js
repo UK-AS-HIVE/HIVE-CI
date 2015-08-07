@@ -1,5 +1,5 @@
 (function () {
-  if (Router) {
+  if (typeof Router !== "undefined" && Router !== null) {
     var url = Meteor.absoluteUrl();
     url = url.replace(/https?:\/\//, '');
     var slash = url.indexOf('/');
