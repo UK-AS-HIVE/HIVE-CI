@@ -34,6 +34,20 @@ EOF
     error_log /var/log/nginx/${TARGET_HOSTNAME}.error.log;
 EOF
 
+  for APP_INDEX in `find ${STAGE_DIR}/var/www -name index.html | gsed -E "s#${STAGE_DIR}##" | cut -b 9- | gsed -E "s/index.html$//"`
+  do
+    INDEX_PATH=${STAGE_DIR}/var/www/${APP_INDEX}
+    cat << EOF >> $NGINX_DIR/${TARGET_HOSTNAME}.conf
+
+    location ${APP_INDEX} {
+      root /var/www/;
+      index index.html;
+      try_files \$uri \$uri/ =404;
+    }
+
+EOF
+  done
+
   for DIR in $DIRS
   do
     APP_PATH=`grep ROOT_URL ${STAGE_DIR}/etc/init.d/meteor-${DIR} | gsed -E "s#^.+https?://[^/]+##"`

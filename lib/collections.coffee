@@ -17,17 +17,21 @@
       options: ->
         Projects.find({},{sort: {name: 1}}).map (p) ->
           label: p.name, value: p._id
-  targetHost:
-    type: String
-    autoform:
-      label: 'Deploy to URL'
-      placeholder: 'https://...'
   branch:
     type: String
     defaultValue: 'devel'
     autoform:
       label: 'Git branch'
       placeholder: 'devel'
+  targetHost:
+    type: String
+    autoform:
+      label: 'Deploy to URL'
+      placeholder: 'https://...'
+  appInstallUrl:
+    type: String
+    autoform:
+      label: 'App install URL'
   settings:
     type: String
     autoform:

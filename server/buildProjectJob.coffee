@@ -164,6 +164,7 @@ class @BuildProjectJob extends ExecJob
   #   for no error or any other value for error.
   getBuildStages: (fr, deployment, project, repo, buildDir, stageDir) ->
     targetUrl = Npm.require('url').parse(deployment.targetHost)
+    appInstallUrl = Npm.require('url').parse(deployment.appInstallUrl)
     sshHost = targetUrl.hostname
     sshUser = deployment.sshConfig?.user || 'root'
     sshPort = deployment.sshConfig?.port || 22
@@ -179,6 +180,7 @@ class @BuildProjectJob extends ExecJob
       STAGE_DIR: stageDir
       ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
       TARGET_HOSTNAME: sshHost
+      TARGET_APP_PATH: appInstallUrl.path
       TARGET_PATH: targetUrl.path
       TARGET_PROTOCOL: targetUrl.protocol
       TARGET_PORT: targetUrl.port || if targetUrl.protocol == 'https:' then 443 else 80
@@ -258,6 +260,8 @@ class @BuildProjectJob extends ExecJob
 
             echo "Adding meteor-#{repo} to default runlevel and restarting"
             ssh -p #{sshPort} -oBatchMode=yes #{sshUser}@#{sshHost} << ENDSSH
+              rm /etc/nginx/sites-enabled/*
+              ln -s /etc/nginx/sites-available/#{sshHost}.conf /etc/nginx/sites-enabled/#{sshHost}.conf
               cd /var/meteor/#{repo}/programs/server && npm install
               update-rc.d meteor-#{repo} defaults
               /etc/init.d/meteor-#{repo} stop; /etc/init.d/meteor-#{repo} start
