@@ -30,8 +30,10 @@
       placeholder: 'https://...'
   appInstallUrl:
     type: String
+    optional: true
     autoform:
       label: 'App install URL'
+      placeholder: 'https://...'
   settings:
     type: String
     autoform:

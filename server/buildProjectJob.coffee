@@ -164,7 +164,7 @@ class @BuildProjectJob extends ExecJob
   #   for no error or any other value for error.
   getBuildStages: (fr, deployment, project, repo, buildDir, stageDir) ->
     targetUrl = Npm.require('url').parse(deployment.targetHost)
-    appInstallUrl = Npm.require('url').parse(deployment.appInstallUrl)
+    appInstallUrl = Npm.require('url').parse(deployment.appInstallUrl || '')
     sshHost = targetUrl.hostname
     sshUser = deployment.sshConfig?.user || 'root'
     sshPort = deployment.sshConfig?.port || 22
