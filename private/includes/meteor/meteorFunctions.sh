@@ -72,8 +72,11 @@ function buildAndroid() {
   then
     cd ${BUILD_DIR}/${REPO}-build/android/project
     ant debug
-    mkdir -p ${STAGE_DIR}/var/www/${TARGET_APP_PATH}
-    cp bin/CordovaApp-debug-unaligned.apk ${STAGE_DIR}/var/www/${TARGET_APP_PATH}/${REPO}.apk
+    if [[ ! -z ${TARGET_APP_PATH} ]]
+    then
+      mkdir -p ${STAGE_DIR}/var/www/${TARGET_APP_PATH}
+      cp bin/CordovaApp-debug-unaligned.apk ${STAGE_DIR}/var/www/${TARGET_APP_PATH}/${REPO}.apk
+    fi
   fi
 }
 
