@@ -1,4 +1,8 @@
 function generateHtmlindex {
+  if [[ -z ${TARGET_APP_PATH} ]]
+  then
+    return
+  fi
   INDEX_PATH=${STAGE_DIR}/var/www/${TARGET_APP_PATH}
   mkdir -p ${INDEX_PATH} #${STAGE_DIR}/var/www/${TARGET_APP_PATH}
   PLISTS=$(ls ${INDEX_PATH}/*.plist | grep -o -e "[a-zA-Z0-9_-]\+\.plist$")

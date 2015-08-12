@@ -164,7 +164,10 @@ class @BuildProjectJob extends ExecJob
   #   for no error or any other value for error.
   getBuildStages: (fr, deployment, project, repo, buildDir, stageDir) ->
     targetUrl = Npm.require('url').parse(deployment.targetHost)
-    appInstallUrl = if deployment.appInstallUrl?.length then Npm.require('url').parse(deployment.appInstallUrl).path || '' else {path: ''}
+    appInstallUrl = ''
+    if deployment.appInstallUrl?.trim().length > 0
+      appInstallUrl = Npm.require('url').parse(deployment.appInstallUrl).path || ''
+    console.log "APP INSTALL URL: #{appInstallUrl}"
     sshHost = targetUrl.hostname
     sshUser = deployment.sshConfig?.user || 'root'
     sshPort = deployment.sshConfig?.port || 22
@@ -180,7 +183,7 @@ class @BuildProjectJob extends ExecJob
       STAGE_DIR: stageDir
       ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
       TARGET_HOSTNAME: sshHost
-      TARGET_APP_PATH: appInstallUrl.path
+      TARGET_APP_PATH: appInstallUrl
       TARGET_PATH: targetUrl.path
       TARGET_PROTOCOL: targetUrl.protocol
       TARGET_PORT: targetUrl.port || if targetUrl.protocol == 'https:' then 443 else 80
@@ -248,8 +251,8 @@ class @BuildProjectJob extends ExecJob
           Assets.getText('includes/deploy/generateHtmlindex.sh') +
           """
             generateInitd
-            generateNginx
             generateHtmlindex
+            generateNginx
 
             echo "Deploying #{repo} to #{deployment.targetHost}..."
             cd #{stageDir}

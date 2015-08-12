@@ -29,8 +29,11 @@ function buildIos {
 
     generateManifest
     
-    mkdir -p ${STAGE_DIR}/var/www
-    cp ${REPO}.ipa ${STAGE_DIR}/var/www/
+    if [[ ! -z ${TARGET_APP_PATH} ]]
+    then
+      mkdir -p ${STAGE_DIR}/var/www/${TARGET_APP_PATH}
+      cp ${REPO}.ipa ${STAGE_DIR}/var/www/${TARGET_APP_PATH}
+    fi
   fi
 }
 
@@ -72,6 +75,10 @@ function generateManifest() {
 EOF
 
 #Copy the manifest to the www stage directory.
-mkdir -p ${STAGE_DIR}/var/www
-cp ${REPO}.plist ${STAGE_DIR}/var/www/
+if [[ ! -z ${TARGET_APP_PATH} ]]
+then
+  echo "Copying iOS app and manifest to ${TARGET_APP_PATH}"
+  mkdir -p ${STAGE_DIR}/var/www/${TARGET_APP_PATH}
+  cp ${REPO}.plist ${STAGE_DIR}/var/www/${TARGET_APP_PATH}
+fi
 } 
