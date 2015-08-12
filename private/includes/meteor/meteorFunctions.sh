@@ -42,7 +42,7 @@ function buildMeteor() {
   # Make sure to generate a clean build, since android seems to bail if the projects were already made
   rm -rf build ../${REPO}-build
   echo "Building... for devserver ${DEV_SERVER}"
-  meteor build --debug --directory ${BUILD_DIR}/${REPO}-build --server ${DEV_SERVER}/${REPO}
+  meteor build --debug --directory ${BUILD_DIR}/${REPO}-build --server ${DEV_SERVER}
 
   RET=$?
   if [[ ${RET} != 0 ]]

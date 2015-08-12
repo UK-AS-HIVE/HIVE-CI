@@ -25,7 +25,7 @@ function buildIos {
     gsed -i 's/\(CODE_SIGN_IDENTITY.*\)Developer/\1Distribution/' ${REPO}.xcodeproj/project.pbxproj
 
     xcodebuild archive -project ${REPO}.xcodeproj -scheme ${REPO} -archivePath ${REPO}.xcarchive
-    xcodebuild -exportArchive -archivePath ${REPO}.xcarchive -exportPath ${REPO} -exportFormat ipa -exportProvisioningProfile "HiveMobilePlatform InHouse ProvisioningProfile"
+    xcodebuild -exportArchive -archivePath ${REPO}.xcarchive -exportPath ${REPO} -exportFormat ipa -exportProvisioningProfile "UK A&S In-House"
 
     generateManifest
     
@@ -56,7 +56,7 @@ function generateManifest() {
             <key>kind</key>
             <string>software-package</string>
             <key>url</key>
-            <string>${DEV_SERVER}/${REPO}.ipa</string>
+            <string>${TARGET_PROTOCOL}//${TARGET_HOSTNAME}:${TARGET_PORT}${TARGET_APP_PATH}${REPO}.ipa</string>
           </dict>
         </array>
         <key>metadata</key>
