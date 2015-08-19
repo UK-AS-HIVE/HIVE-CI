@@ -182,11 +182,15 @@ class @BuildProjectJob extends ExecJob
       BUILD_DIR: buildDir
       STAGE_DIR: stageDir
       ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
-      TARGET_HOSTNAME: sshHost
+      TARGET_HOSTNAME: targetUrl.hostname
       TARGET_APP_PATH: appInstallUrl.replace(/\/$/, '') + '/'
       TARGET_PATH: targetUrl.path
       TARGET_PROTOCOL: targetUrl.protocol
       TARGET_PORT: targetUrl.port || if targetUrl.protocol == 'https:' then 443 else 80
+      URIENC_TARGET_HOSTNAME: encodeURIComponent(targetUrl.hostname)
+      URIENC_TARGET_PATH: encodeURIComponent(targetUrl.path)
+      URIENC_TARGET_PROTOCOL: encodeURIComponent(targetUrl.protocol)
+      URIENC_TARGET_PORT: encodeURIComponent(targetUrl.port || if targetUrl.protocol == 'https' then 443 else 80)
 
     if Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/.meteor")
       # Meteor app
