@@ -188,7 +188,7 @@ class @BuildProjectJob extends ExecJob
       TARGET_PROTOCOL: targetUrl.protocol
       TARGET_PORT: targetUrl.port || if targetUrl.protocol == 'https:' then 443 else 80
       URIENC_TARGET_HOSTNAME: encodeURIComponent(targetUrl.hostname)
-      URIENC_TARGET_PATH: encodeURIComponent(targetUrl.path)
+      URIENC_TARGET_PATH: encodeURIComponent(targetUrl.path.replace(/^\//, ''))
       URIENC_TARGET_PROTOCOL: encodeURIComponent(targetUrl.protocol)
       URIENC_TARGET_PORT: encodeURIComponent(targetUrl.port || if targetUrl.protocol == 'https' then 443 else 80)
 
