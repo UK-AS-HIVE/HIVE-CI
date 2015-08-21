@@ -63,7 +63,7 @@ function buildMeteor() {
   #find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#"ROOT_URL":"'"${DEV_SERVER}"'/"#ROOT_URL":"'"${DEV_SERVER}/${REPO}/"'"#g'
   RAW_DEV_SERVER=`echo ${DEV_SERVER} | gsed "s#https\?://##"`
   find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#%22ROOT_URL_PATH_PREFIX%22%3A%22%22#%22ROOT_URL_PATH_PREFIX%22%3A%22'"${URIENC_TARGET_PATH}"'%22#g'
-  find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#%22DDP_DEFAULT_CONNECTION_URL%22%3A%22'"${URIENC_TARGET_PROTOCOL}"'%2F%2F'"${URIENC_TARGET_HOSTNAME}"'%22#%22DDP_DEFAULT_CONNECTION_URL%22%3A%22'"${URIENC_TARGET_PROTOCOL}"'%%2F%2F'"${URIENC_TARGET_HOSTNAME}%2F${URIENC_TARGET_PATH}"'%22#g'
+  find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#%22DDP_DEFAULT_CONNECTION_URL%22%3A%22'"${URIENC_TARGET_PROTOCOL}"'%2F%2F'"${URIENC_TARGET_HOSTNAME}"'%22#%22DDP_DEFAULT_CONNECTION_URL%22%3A%22'"${URIENC_TARGET_PROTOCOL}"'%2F%2F'"${URIENC_TARGET_HOSTNAME}%2F${URIENC_TARGET_PATH}"'%22#g'
 }
 
 function buildAndroid() {
