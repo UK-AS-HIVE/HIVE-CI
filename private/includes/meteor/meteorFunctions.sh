@@ -84,9 +84,9 @@ function buildAndroid() {
 function meteorApplyDevPatches() {
   echo "Patching html href and src attributes for relative routes"
   find . -depth 1 -name "*.html" | xargs gsed -i 's/href="\//href="{{rootAppUrl}}\//g'
-  find . -depth 1 -name "*.html" | xargs gsed -i 's/src="\//src="\/'"${REPO}"'\//g'
+  find . -depth 1 -name "*.html" | xargs gsed -i 's/src="\//src="{{rootAppUrl}}\//g'
   find client -name "*.html" -type f -print0 | xargs -0 gsed -i 's/href="\//href="{{rootAppUrl}}\//g'
-  find client -name "*.html" -type f -print0 | xargs -0 gsed -i 's/src="\//src="\/'"${REPO}"'\//g'
+  find client -name "*.html" -type f -print0 | xargs -0 gsed -i 's/src="\//src="{{rootAppUrl}}\//g'
 
   echo "Patching css url() references for relative routes"
   find client -name "*.css" -type f -print0 | xargs -0 gsed -i "s/url(\(['\"]\)\?\(\/\)\?/url(\1\2${REPO}\//g"
