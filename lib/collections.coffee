@@ -36,6 +36,11 @@
       placeholder: 'https://...'
   settings:
     type: String
+    custom: ->
+      try
+        JSON.parse @value
+      catch e
+        return 'Settings must be valid JSON.'
     autoform:
       label: 'Settings (JSON)'
       type: 'textarea'
