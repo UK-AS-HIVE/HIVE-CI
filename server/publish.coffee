@@ -12,7 +12,7 @@ Meteor.publishComposite 'projectDetail', (projectName) ->
   children: [
     {
       find: (project) ->
-        BuildSessions.find({projectId: project._id}, {limit: 100})
+        BuildSessions.find({projectId: project._id}, {limit: 100, sort: {timestamp: -1}})
     }
   ,
     {
