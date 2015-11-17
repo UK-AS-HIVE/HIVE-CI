@@ -118,6 +118,7 @@ class @BuildProjectJob extends ExecJob
 
     for s in stages
       @params.cmd = """
+        set -e
         cd #{fr}/sandbox/build/#{repo}
         #{s.cmd}
       """
