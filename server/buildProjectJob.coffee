@@ -1,6 +1,7 @@
 Meteor.methods
   buildProject: (projectId, forceRebuild) ->
-    console.log "scheduling BuildProjectJob for #{projectId}"
+    project = Projects.findOne projectId
+    console.log "scheduling BuildProjectJob for #{project.name}"
     Deployments.find({projectId: projectId}).forEach (d) ->
       Meteor.call 'buildDeployment', d, forceRebuild
     #Projects.update projectId, {$set: {status: 'Pending'}}
