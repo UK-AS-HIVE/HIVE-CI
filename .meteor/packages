@@ -4,7 +4,6 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-platform
 insecure
 hive:file-registry
 iron:router
@@ -13,8 +12,22 @@ twbs:bootstrap
 aldeed:collection2
 http
 reywood:publish-composite
-differential:workers
+hive:workers
 mrt:moment
 percolate:synced-cron
 aldeed:autoform@5.3.2
 yogiben:autoform-modals
+standard-minifiers
+meteor-base
+mobile-experience
+mongo
+blaze-html-templates
+session
+jquery
+tracker
+logging
+reload
+random
+ejson
+spacebars
+check
