@@ -41,7 +41,7 @@ availableStages =
   jshint:
     name: 'jshint'
     cmd: """
-        JF=`find . -name "*.js" | grep -v .meteor | grep -v packages | grep -v .min.js`
+        JF=`find . -name "*.js" | grep -v "client/compatibility" | grep -v "public/" | grep -v .meteor | grep -v packages | grep -v .min.js`
         test -z "${JF}" || jshint ${JF}
       """
     errorMessage: (out) ->
