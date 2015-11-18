@@ -1,5 +1,7 @@
 function generateNginx {
   #Seems like these EOF's have to be not indented, which makes this formatting/indentation a nightmare. Sorry about that.
+  echo "Generating nginx config"
+
   APPS_DIR="$STAGE_DIR/var/meteor"
   mkdir -p ${APPS_DIR}
   DIRS=`ls -lU $APPS_DIR | egrep '^d' | awk '{print $9}'`

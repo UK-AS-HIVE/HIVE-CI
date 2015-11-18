@@ -1,12 +1,22 @@
 function generateHtmlindex {
+  echo "Generating HTML index"
+
   if [[ -z ${TARGET_APP_PATH} ]]
   then
     return
   fi
-  INDEX_PATH=${STAGE_DIR}/var/www/${TARGET_APP_PATH}
+  INDEX_PATH=${STAGE_DIR}/var/www${TARGET_APP_PATH}
   mkdir -p ${INDEX_PATH} #${STAGE_DIR}/var/www/${TARGET_APP_PATH}
-  PLISTS=$(ls ${INDEX_PATH}/*.plist | grep -o -e "[a-zA-Z0-9_-]\+\.plist$")
-  APKS=$(ls ${INDEX_PATH}/*.apk | grep -o -e "[a-zA-Z0-9_-]\+\.apk$")
+  PLISTS=`find ${INDEX_PATH} -name "*.plist"`
+  if [[ ! -z ${PLISTS} ]]
+  then
+    PLISTS=`echo ${PLISTS} | grep -o -e "[a-zA-Z0-9_\-]\+\.plist$"`
+  fi
+  APKS=`find ${INDEX_PATH} -name "*.apk"`
+  if [[ ! -z ${APKS} ]]
+  then
+    APKS=`echo ${APKS} | grep -o -e "[a-zA-Z0-9_\-]\+\.apk$"`
+  fi
   DEVSERVER="${TARGET_PROTOCOL}//${TARGET_HOSTNAME}:${TARGET_PORT}${TARGET_APP_PATH}"
   touch ${INDEX_PATH}/index.html
   cat << EOF > ${INDEX_PATH}/index.html
