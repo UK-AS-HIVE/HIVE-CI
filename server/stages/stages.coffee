@@ -61,30 +61,30 @@ availableStages =
   build:
     name: 'Building Meteor app'
     cmd:
-      Assets.getText('includes/meteor/meteorFunctions.sh') +
+      Assets.getText('scripts/build/meteor.sh') +
       """
         buildMeteor
       """
   ios:
     name: 'Building iOS app'
     cmd:
-      Assets.getText('includes/meteor/iosFunctions.sh') +
+      Assets.getText('scripts/build/ios.sh') +
       """
         buildIos
       """
   android:
     name: 'Build Android app'
     cmd:
-      Assets.getText('includes/meteor/meteorFunctions.sh') +
+      Assets.getText('scripts/build/android.sh') +
       """
         buildAndroid
       """
   deploy:
     name: "Deploying to host"
     cmd:
-      Assets.getText('includes/deploy/generateInitd.sh') +
-      Assets.getText('includes/deploy/generateNginx.sh') +
-      Assets.getText('includes/deploy/generateHtmlindex.sh') +
+      Assets.getText('scripts/deploy/generateInitd.sh') +
+      Assets.getText('scripts/deploy/generateNginx.sh') +
+      Assets.getText('scripts/deploy/generateHtmlindex.sh') +
       """
         generateInitd
         generateHtmlindex

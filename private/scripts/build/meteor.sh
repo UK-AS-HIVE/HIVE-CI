@@ -66,20 +66,6 @@ function buildMeteor() {
   find . -name "index.html" -type f -print0 | xargs -0 gsed -i 's#%22DDP_DEFAULT_CONNECTION_URL%22%3A%22'"${URIENC_TARGET_PROTOCOL}"'%2F%2F'"${URIENC_TARGET_HOSTNAME}"'%22#%22DDP_DEFAULT_CONNECTION_URL%22%3A%22'"${URIENC_TARGET_PROTOCOL}"'%2F%2F'"${URIENC_TARGET_HOSTNAME}%2F${URIENC_TARGET_PATH}"'%22#g'
 }
 
-function buildAndroid() {
-
-  if [[ -e ${BUILD_DIR}/${REPO}-build/android/project ]]
-  then
-    cd ${BUILD_DIR}/${REPO}-build/android/project
-    ant debug
-    if [[ ! -z ${TARGET_APP_PATH} ]]
-    then
-      mkdir -p ${STAGE_DIR}/var/www/${TARGET_APP_PATH}
-      cp bin/CordovaApp-debug-unaligned.apk ${STAGE_DIR}/var/www/${TARGET_APP_PATH}/${REPO}.apk
-    fi
-  fi
-}
-
 # Execute from within the main directory before building
 function meteorApplyDevPatches() {
   echo "Patching html href and src attributes for relative routes"
@@ -91,9 +77,9 @@ function meteorApplyDevPatches() {
   echo "Patching css url() references for relative routes"
   find client -name "*.css" -type f -print0 | xargs -0 gsed -i "s/url(\(['\"]\)\?\(\/\)\?/url(\1\2${REPO}\//g"
 
-  echo "Copying ${ORIG_DIR}/includes/meteor/relativeRoutes.js"
+  echo "Copying ${ORIG_DIR}/scripts/build/relativeRoutes.js"
   mkdir -p lib/relativeRoutes
-  cp ${ORIG_DIR}/includes/meteor/relativeRoutes.js lib/relativeRoutes/relativeRoutes.js
+  cp ${ORIG_DIR}/scripts/build/relativeRoutes.js lib/relativeRoutes/relativeRoutes.js
 }
 
 function deployMeteor() {
