@@ -32,7 +32,7 @@ availableStages =
   coffeelint:
     name: 'CoffeeLint'
     cmd: """
-        CF=`find . -name "*.coffee" | grep -v .meteor | grep -v packages`
+        CF=`find . -name "*.coffee" | { grep -v .meteor || true; } | { grep -v packages || true; }`
         test -z "${CF}" || coffeelint ${CF}
       """
     errorMessage: (out) ->
@@ -41,7 +41,7 @@ availableStages =
   jshint:
     name: 'jshint'
     cmd: """
-        JF=`find . -name "*.js" | grep -v "client/compatibility" | grep -v "public/" | grep -v .meteor | grep -v packages | grep -v .min.js`
+        JF=`find . -name "*.js" | { grep -vE "client/compatibility|public/|\.meteor|packages|.min.js" || true; }`
         test -z "${JF}" || jshint ${JF}
       """
     errorMessage: (out) ->
