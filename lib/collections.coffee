@@ -28,6 +28,18 @@
     autoform:
       label: 'Deploy to URL'
       placeholder: 'https://...'
+  targetIp:
+     type: String
+     autoform:
+       omit: true
+     #denyInsert: true
+     optional: true
+  internalPort:
+    type: Number
+    autoform:
+    #  omit: true
+      placeholder: 'leave blank to auto-assign'
+    optional: true
   appInstallUrl:
     type: String
     optional: true

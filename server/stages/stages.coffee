@@ -1,3 +1,5 @@
+@Stages = @Stages || {}
+
 getEnv = (fr, deployment, project, repo, buildDir, stageDir) ->
   targetUrl = Npm.require('url').parse(deployment.targetHost)
   appInstallUrl = ''
@@ -28,7 +30,7 @@ getEnv = (fr, deployment, project, repo, buildDir, stageDir) ->
     URIENC_TARGET_PROTOCOL: encodeURIComponent(targetUrl.protocol)
     URIENC_TARGET_PORT: encodeURIComponent(targetUrl.port || if targetUrl.protocol == 'https' then 443 else 80)
 
-availableStages =
+@Stages = _.extend @Stages,
   coffeelint:
     name: 'CoffeeLint'
     cmd: """
@@ -83,12 +85,10 @@ availableStages =
     name: "Deploying to host"
     cmd:
       Assets.getText('scripts/deploy/generateInitd.sh') +
-      Assets.getText('scripts/deploy/generateNginx.sh') +
       Assets.getText('scripts/deploy/generateHtmlindex.sh') +
       """
         generateInitd
         generateHtmlindex
-        generateNginx
 
         echo "Deploying ${REPO} to ${DEV_SERVER}..."
         cd ${STAGE_DIR}
@@ -120,7 +120,14 @@ ENDSSH
 
   if Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/.meteor")
     # Meteor app
-    return _.map _.omit(availableStages, 'ios', 'android'), (s) -> _.extend {env: env}, s
+    #return _.map [Stages.generateNginx], (s) -> _.extend {env: env}, s
+    #return _.map _.omit(availableStages, 'ios', 'android'), (s) -> _.extend {env: env}, s
+    _.map [
+      'coffeelint', 'jshint', 'spacejam', 'build',
+      #'ios', 'android',
+      'generateNginx', 'deploy'
+    ], (stage) -> Stages[stage]
+
   else if Npm.require('fs').existsSync("#{fr}/sandbox/build/#{repo}/package.js")
     # Meteor package
     return _.map _.pick(availableStages, 'coffeelint', 'jshint', 'spacejam'), (s) -> _.extend {env: env}, s

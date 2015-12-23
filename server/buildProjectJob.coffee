@@ -16,7 +16,8 @@ class @BuildProjectJob extends ExecJob
 
     targetUrl = Npm.require('url').parse(deployment.targetHost)
     buildDir = fr + 'sandbox/build'
-    stageDir = fr + 'sandbox/stage/' + targetUrl.hostname
+    console.log targetUrl.hostname
+    stageDir = fr + 'sandbox/stage/' + dnsLookup(targetUrl.hostname)
 
     orgAndRepo = proj.gitUrl.match(/([a-zA-Z0-9-_.]+)\/([a-zA-Z0-9-_.]+)$/)
     org = orgAndRepo[1]
@@ -99,22 +100,34 @@ class @BuildProjectJob extends ExecJob
       return
 
     for s in stages
-      @params.cmd = """
-        set -ex
-        cd #{fr}/sandbox/build/#{repo}
-        #{s.cmd}
-      """
-      @params.env = s.env
+      if s.cmd?
+        @params.cmd = """
+          set -ex
+          cd #{fr}/sandbox/build/#{repo}
+          #{s.cmd}
+        """
+        @params.env = s.env
       BuildSessions.update session._id,
         $set:
           message: s.name
       console.log "=== begin stage #{s.name} (#{repo}) ==="
-      ex = super()
-      console.log ex.stdout
-      if ex.code != 0
-        console.log 'FAILURE'
-      else
-        console.log 'SUCCESS'
+      if s.cmd?
+        ex = super()
+        console.log ex.stdout
+        if ex.code != 0
+          console.log 'FAILURE'
+        else
+          console.log 'SUCCESS'
+      else if s.func?
+        try
+          s.func.call @, fr, deployment, proj, repo, buildDir, stageDir
+          ex =
+            code: 0
+            stdout: ''
+        catch exception
+          ex =
+            code: 1
+            stdout: exception.toString()
       console.log "=== end stage #{s.name} (#{repo}) ==="
 
       if ex.code != 0

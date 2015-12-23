@@ -31,3 +31,6 @@ random
 ejson
 spacebars
 check
+meteorhacks:ssr
+netanelgilad:mkdirp
+matb33:collection-hooks

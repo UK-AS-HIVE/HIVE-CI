@@ -27,7 +27,7 @@ ejson@1.0.7
 fastclick@1.0.7
 geojson-utils@1.0.4
 hive:file-registry@0.9.13
-hive:workers@2.0.5
+hive:workers@2.0.6
 hot-code-push@1.0.0
 html-tools@1.0.5
 htmljs@1.0.5
@@ -47,8 +47,10 @@ launch-screen@1.0.4
 less@2.5.1
 livedata@1.0.15
 logging@1.0.8
+matb33:collection-hooks@0.8.1
 meteor@1.1.10
 meteor-base@1.0.1
+meteorhacks:ssr@2.2.0
 minifiers@1.1.7
 minimongo@1.0.10
 mobile-experience@1.0.1
@@ -58,6 +60,7 @@ mongo@1.1.3
 mongo-id@1.0.1
 mpowaga:string-template@0.1.0
 mrt:moment@2.8.1
+netanelgilad:mkdirp@0.0.1
 npm-mongo@1.4.39_1
 observe-sequence@1.0.7
 ordered-dict@1.0.4
