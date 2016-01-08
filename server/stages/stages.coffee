@@ -20,6 +20,7 @@ getEnv = (fr, deployment, project, repo, buildDir, stageDir) ->
     SSH_HOST: targetUrl.hostname
     SSH_USER: deployment.sshConfig?.user || 'root'
     SSH_PORT: deployment.sshConfig?.port || 22
+    APP_INTERNAL_PORT: deployment.internalPort
     TARGET_HOSTNAME: targetUrl.hostname
     TARGET_APP_PATH: appInstallUrl.replace(/\/$/, '') + '/'
     TARGET_PATH: targetUrl.path
@@ -94,13 +95,13 @@ getEnv = (fr, deployment, project, repo, buildDir, stageDir) ->
         cd ${STAGE_DIR}
         rsync -avz -e "ssh -p ${SSH_PORT} -oBatchMode=yes" var/www/ ${SSH_USER}@${SSH_HOST}:/var/www
         rsync -avz --delete --exclude 'programs/server/node_modules' --exclude 'files/' -e "ssh -p ${SSH_PORT} -oBatchmode=yes" var/meteor/${REPO} ${SSH_USER}@${SSH_HOST}:/var/meteor
-        rsync -avz -e "ssh -p ${SSH_PORT} -oBatchMode=yes" etc/nginx/sites-available/${SSH_HOST}.conf ${SSH_USER}@${SSH_HOST}:/etc/nginx/sites-available/${SSH_HOST}.conf
+        rsync -avz -e "ssh -p ${SSH_PORT} -oBatchMode=yes" etc/nginx/sites-enabled/${SSH_HOST}.conf ${SSH_USER}@${SSH_HOST}:/etc/nginx/sites-enabled/${SSH_HOST}.conf
         rsync -avz -e "ssh -p ${SSH_PORT} -oBatchMode=yes" etc/init.d/ ${SSH_USER}@${SSH_HOST}:/etc/init.d
 
         echo "Adding meteor-${REPO} to default runlevel and restarting"
         ssh -p ${SSH_PORT} -oBatchMode=yes ${SSH_USER}@${SSH_HOST} << ENDSSH
-          rm /etc/nginx/sites-enabled/*
-          ln -s /etc/nginx/sites-available/${SSH_HOST}.conf /etc/nginx/sites-enabled/${SSH_HOST}.conf
+          #rm /etc/nginx/sites-enabled/*
+          #ln -s /etc/nginx/sites-available/${SSH_HOST}.conf /etc/nginx/sites-enabled/${SSH_HOST}.conf
           cd /var/meteor/${REPO}/programs/server && npm install
           update-rc.d meteor-${REPO} defaults
           /etc/init.d/meteor-${REPO} stop; /etc/init.d/meteor-${REPO} start

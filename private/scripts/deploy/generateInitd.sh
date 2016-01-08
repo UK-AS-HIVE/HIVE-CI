@@ -2,27 +2,12 @@ function generateInitd {
   APPS_DIR="${STAGE_DIR}/var/meteor"
   mkdir -p ${APPS_DIR}
   DIRS=`ls -lU $APPS_DIR | egrep '^d' | awk '{print $9}'`
-  PORT=3000
+  PORT=${APP_INTERNAL_PORT}
 
   mkdir -p $STAGE_DIR/etc/init.d/
 
   INITD_FILE=${STAGE_DIR}/etc/init.d/meteor-${REPO}
   echo "INITD_FILE = ${INITD_FILE}"
-  if [[ -e ${INITD_FILE} ]]
-  then
-    PORT=`grep PORT ${INITD_FILE} | grep -o -E "[0-9]+"`
-    echo "This project has been deployed before, using port: ${PORT}"
-  else
-    if [[ "$(ls -A ${STAGE_DIR}/etc/init.d/)" ]]
-    then
-      PORT=`grep PORT ${STAGE_DIR}/etc/init.d/meteor-* | grep -o -E "[0-9]+" | sort -r | head -n 1`
-      PORT=$((PORT+1))
-      echo "This is a new project, using port: ${PORT}"
-    else
-      echo "This is the first project deploying to this server, using port: ${PORT}"
-    fi
-  fi
-
   DIR=${REPO}
 
   cat << EOF > ${INITD_FILE}

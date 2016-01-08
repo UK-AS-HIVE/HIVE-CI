@@ -37,7 +37,7 @@ Stages.generateNginx =
 
     console.log generated
 
-    nginxDir = "#{stageDir}/etc/nginx/sites-available"
+    nginxDir = "#{stageDir}/etc/nginx/sites-enabled"
 
     mkdirp.sync nginxDir
     Npm.require('fs').writeFileSync "#{nginxDir}/#{targetUrl.hostname}.conf", generated
