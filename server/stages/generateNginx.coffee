@@ -27,7 +27,7 @@ Stages.generateNginx =
         else
           '/appDownloads/'
       proxiedApps: ->
-        deployments = Deployments.find {targetIp: hostIp}
+        deployments = Deployments.find {targetHostName: targetUrl.hostname}
         console.log 'found ' + deployments.count() + ' deployments'
         return deployments
       appPath: ->

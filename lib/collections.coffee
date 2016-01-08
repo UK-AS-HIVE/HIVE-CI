@@ -28,6 +28,11 @@
     autoform:
       label: 'Deploy to URL'
       placeholder: 'https://...'
+  targetHostName:
+    type: String
+    autoform:
+      omit: true
+    optional: true
   targetIp:
      type: String
      autoform:
