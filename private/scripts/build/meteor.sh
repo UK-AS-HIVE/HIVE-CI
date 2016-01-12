@@ -11,14 +11,6 @@ function buildMeteor() {
     cd ..
   fi
 
-  if [[ ! -z `grep hive:accounts-ldap .meteor/packages` ]]
-  then
-    mkdir -p packages
-    cd packages
-    git clone https://${GH_API_TOKEN}:x-oauth-basic@github.com/UK-AS-HIVE/meteor-accounts-ldap hive:accounts-ldap
-    cd ..
-  fi
-
   if [[ ! -z `grep hive:export-csv .meteor/packages` ]]
   then
     mkdir -p packages
