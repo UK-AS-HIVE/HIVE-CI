@@ -23,7 +23,7 @@ getEnv = (fr, deployment, project, repo, buildDir, stageDir) ->
     APP_INTERNAL_PORT: deployment.internalPort
     TARGET_HOSTNAME: targetUrl.hostname
     TARGET_APP_PATH: appInstallUrl.replace(/\/$/, '') + '/'
-    TARGET_PATH: targetUrl.path
+    TARGET_PATH: targetUrl.path.replace(/^\//, '')
     TARGET_PROTOCOL: targetUrl.protocol
     TARGET_PORT: targetUrl.port || if targetUrl.protocol == 'https:' then 443 else 80
     URIENC_TARGET_HOSTNAME: encodeURIComponent(targetUrl.hostname)
