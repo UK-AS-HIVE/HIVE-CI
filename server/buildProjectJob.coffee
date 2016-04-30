@@ -17,6 +17,8 @@ class @BuildProjectJob extends ExecJob
     targetUrl = Npm.require('url').parse(deployment.targetHost)
     buildDir = fr + 'sandbox/build'
     console.log targetUrl.hostname
+
+    {dnsLookup} = require '/imports/stages/dnsLookup.coffee'
     stageDir = fr + 'sandbox/stage/' + dnsLookup(targetUrl.hostname)
 
     orgAndRepo = proj.gitUrl.match(/([a-zA-Z0-9-_.]+)\/([a-zA-Z0-9-_.]+)$/)
@@ -89,6 +91,7 @@ class @BuildProjectJob extends ExecJob
         BuildSessions.remove {_id: session._id}
         return
 
+    {getBuildStages} = require '/imports/stages/getBuildStages.coffee'
     stages = getBuildStages fr, deployment, proj, repo, buildDir, stageDir
 
     if !stages
