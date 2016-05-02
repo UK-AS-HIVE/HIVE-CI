@@ -16,7 +16,8 @@ exports.getBuildStages = (fr, deployment, project, repo, buildDir, stageDir) ->
     #return _.map [Stages.generateNginx], (s) -> _.extend {env: env}, s
     #return _.map _.omit(availableStages, 'ios', 'android'), (s) -> _.extend {env: env}, s
     _.map [
-      'coffeelint', 'jshint', 'spacejam', 'gagarin', 'build',
+      'coffeelint', 'jshint', #'spacejam',
+      'gagarin', 'build',
       #'ios', 'android',
       'generateNginx', 'deploy'
     ], (stage) -> Stages[stage]
