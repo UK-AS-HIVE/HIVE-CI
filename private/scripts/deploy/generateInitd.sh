@@ -50,10 +50,8 @@ start() {
   # This is found in the library referenced at the top of the script
   start_daemon
 
-  # Notice that we change the PATH because on reboot
-  # the PATH does not include the path to node.
   cd \$sourceDir
-  PATH=/usr/local/bin:\$PATH
+
   export PORT=$PORT
   export MONGO_URL=mongodb://localhost:27017/$DIR
   export ROOT_URL=${DEV_SERVER}
