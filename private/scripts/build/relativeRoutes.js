@@ -30,15 +30,16 @@
     function escapeRegex(str) {
         return str.replace(/([/\\.?*()^${}|[\]])/g, '\\$1');
     }
-
-    if (Meteor.isClient) {
-      Template.registerHelper('rootAppUrl', function() {
-        if (Meteor.isCordova) {
-          return '/'+__meteor_runtime_config__.ROOT_URL_PATH_PREFIX.replace(/\/$/, '');
-        } else {
-          return __meteor_runtime_config__.ROOT_URL.replace(/\/$/, '');
-        }
-      });
-    }
   }
+
+  if (Meteor.isClient) {
+    Template.registerHelper('rootAppUrl', function() {
+      if (Meteor.isCordova) {
+        return '/'+__meteor_runtime_config__.ROOT_URL_PATH_PREFIX.replace(/\/$/, '');
+      } else {
+        return __meteor_runtime_config__.ROOT_URL.replace(/\/$/, '');
+      }
+    });
+  }
+
 })();
