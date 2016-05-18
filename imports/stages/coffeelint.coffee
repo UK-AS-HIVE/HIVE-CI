@@ -1,7 +1,7 @@
 exports.coffeelint =
   name: 'CoffeeLint'
   cmd: """
-      CF=`find . -name "*.coffee" | { grep -v .meteor || true; } | { grep -v packages || true; }`
+      CF=`find . -name "*.coffee" | { grep -v -E "^\.\/\.|packages|imports\/contrib\/|compatibility\/" || true; }`
       test -z "${CF}" || coffeelint ${CF}
     """
   errorMessage: (out) ->
