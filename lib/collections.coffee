@@ -92,8 +92,10 @@
     type: [new SimpleSchema
         alias:
           type: String
+          regEx: SimpleSchema.RegEx.Domain
         target:
           type: String
+          regEx: SimpleSchema.RegEx.Domain
       ]
     optional: true
   env:
