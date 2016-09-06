@@ -88,6 +88,14 @@
     autoform:
       label: 'SSH port'
       placeholder: 22
+  domainAliases:
+    type: [new SimpleSchema
+        alias:
+          type: String
+        target:
+          type: String
+      ]
+    optional: true
   env:
     type: Object
     optional: true

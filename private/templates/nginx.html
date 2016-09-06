@@ -1,3 +1,17 @@
+{{#each domainAliases}}
+  server {
+    listen 80;
+    server_name {{alias}};
+    return 301 {{targetProtocol}}//{{target}}$request_uri;
+  }
+
+  server {
+    listen 443;
+    server_name {{alias}};
+    return 301 {{targetProtocol}}//{{target}}$request_uri;
+  }
+{{/each}}
+
   server {
     listen 80;
     server_name {{targetHostname}};
