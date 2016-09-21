@@ -10,8 +10,8 @@
     server_name {{alias}};
     return 301 {{targetProtocol}}//{{target}}$request_uri;
   }
-{{/each}}
 
+{{/each}}
   server {
     listen 80;
     server_name {{targetHostname}};
