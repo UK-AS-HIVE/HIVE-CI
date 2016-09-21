@@ -74,6 +74,8 @@ EOF
     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto https;
     proxy_redirect off;
+
+    add_header X-UA-Compatible "IE=Edge";
 EOF
 
   if [[ ${TARGET_PROTOCOL} == "https:" ]]
