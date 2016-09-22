@@ -11,7 +11,7 @@ exports.generateNginx =
     Template.nginx.helpers
       eq: (a, b) -> a == b
       targetHostname: -> targetUrl.hostname
-      targetHostAliases: -> deployment.targetHostAliases
+      domainAliases: -> deployment.domainAliases
       targetProtocol: -> targetUrl.protocol
       appDownloadPath: ->
         if deployment.appInstallUrl
