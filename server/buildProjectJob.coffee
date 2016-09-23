@@ -133,6 +133,12 @@ class @BuildProjectJob extends ExecJob
             stdout: exception.toString()
       console.log "=== end stage #{s.name} (#{repo}) ==="
 
+      BuildSessions.update session._id,
+        $push:
+          stages:
+            name: s.name
+            stdout: ex.stdout
+
       if ex.code != 0
         msg = if s.errorMessage? then s.errorMessage(ex.stdout) else "#{s.name} returned exit code #{ex.code}"
         check msg, String
@@ -140,10 +146,6 @@ class @BuildProjectJob extends ExecJob
           $set:
             status: 'Fail'
             message: msg
-          $push:
-            stages:
-              name: s.name
-              stdout: ex.stdout
         return
 
     # TODO: notify

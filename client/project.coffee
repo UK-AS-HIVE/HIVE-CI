@@ -16,7 +16,9 @@ Template.project.helpers
   stdout: ->
     window.requestAnimationFrame ->
       $('textarea').scrollTop(99999)
-    _.pluck(@stages, 'stdout').join('\n\n')
+    stages = _.map @stages, (s) ->
+      "== begin stage #{s.name} ==\n#{s.stdout}\n== end stage #{s.name} =="
+    stages.join('\n\n')
   deployment: ->
     Deployments.find {projectId: @_id}
 
