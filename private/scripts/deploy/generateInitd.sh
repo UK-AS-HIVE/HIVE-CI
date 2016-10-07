@@ -55,7 +55,10 @@ setup_nodejs() {
   nvm install ${NODE_VERSION}
   nvm use ${NODE_VERSION}
 
-  npm install -g --unsafe-perm forever
+  if [[ -z `which forever` ]]
+  then
+    npm install -g --unsafe-perm forever
+  fi
   cd /var/meteor/${REPO}/programs/server && npm install
 }
 
