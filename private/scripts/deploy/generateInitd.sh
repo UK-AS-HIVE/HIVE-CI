@@ -45,7 +45,7 @@ sourceDir=/var/meteor/$DIR
 scriptId=\$sourceDir/main.js
 
 setup_nodejs() {
-  if [[ -d /opt/nvm ]]
+  if [[ ! -d /opt/nvm ]]
   then
     cd /opt/
     git clone https://github.com/creationix/nvm
@@ -55,7 +55,7 @@ setup_nodejs() {
   nvm install ${NODE_VERSION}
   nvm use ${NODE_VERSION}
 
-  if [[ -z `which forever` ]]
+  if [[ -z \`which forever\` ]]
   then
     npm install -g --unsafe-perm forever
   fi
