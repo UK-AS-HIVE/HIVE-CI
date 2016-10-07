@@ -52,10 +52,10 @@ setup_nodejs() {
   fi
 
   source /opt/nvm/nvm.sh
-  npm install ${NODE_VERSION}
-  npm use ${NODE_VERSION}
-  npm install -g --unsafe-perm forever
+  nvm install ${NODE_VERSION}
+  nvm use ${NODE_VERSION}
 
+  npm install -g --unsafe-perm forever
   cd /var/meteor/${REPO}/programs/server && npm install
 }
 
@@ -82,7 +82,7 @@ EOF
 
   cat << EOF >> ${INITD_FILE}
 
-  setup_nodejs()
+  setup_nodejs
   forever start --pidFile \$pidfile -l \$logFile -o \$outFile -e \$errFile -a -d --sourceDir \$sourceDir/ main.js
 
   RETVAL=\$?
@@ -90,21 +90,21 @@ EOF
 
 restart() {
   echo -n "Restarting \$scriptId"
-  setup_nodejs()
+  setup_nodejs
   forever restart \$scriptId
   RETVAL=\$?
 }
 
 stop() {
   echo -n "Shutting down \$scriptId"
-  setup_nodejs()
+  setup_nodejs
   forever stop \$scriptId
   RETVAL=\$?
 }
 
 status() {
   echo -n "Status \$scriptId"
-  setup_nodejs()
+  setup_nodejs
   forever list
   RETVAL=\$?
 }
