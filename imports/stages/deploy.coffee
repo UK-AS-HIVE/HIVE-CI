@@ -14,10 +14,13 @@ exports.deploy =
       rsync -avz -e "ssh -p ${SSH_PORT} -oBatchMode=yes" etc/nginx/sites-enabled/${SSH_HOST}.conf ${SSH_USER}@${SSH_HOST}:/etc/nginx/sites-enabled/${SSH_HOST}.conf
       rsync -avz -e "ssh -p ${SSH_PORT} -oBatchMode=yes" etc/init.d/ ${SSH_USER}@${SSH_HOST}:/etc/init.d
 
-      echo "Adding meteor-${REPO} to default runlevel and restarting"
+      echo "Updating server configuration and restarting app"
       ssh -p ${SSH_PORT} -oBatchMode=yes ${SSH_USER}@${SSH_HOST} << ENDSSH
         #rm /etc/nginx/sites-enabled/*
         #ln -s /etc/nginx/sites-available/${SSH_HOST}.conf /etc/nginx/sites-enabled/${SSH_HOST}.conf
+        nvm install ${NODE_VERSION}
+        npm install -g --unsafe-perm forever
+
         cd /var/meteor/${REPO}/programs/server && npm install
         update-rc.d meteor-${REPO} defaults
         /etc/init.d/meteor-${REPO} stop; /etc/init.d/meteor-${REPO} start

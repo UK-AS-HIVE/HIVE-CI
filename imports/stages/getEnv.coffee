@@ -1,3 +1,13 @@
+getNodeVersion = (buildDir, repo) ->
+  fs = Npm.require('fs')
+  meteorRelease = fs.readFileSync "#{buildDir}/#{repo}/.meteor/release"
+  if meteorRelease.indexOf("@1.4") > -1
+    return "4.5.0"
+  else if meteorRelease.indexOf("@1.3") > -1
+    return "0.10.46"
+  else
+    return "0.10"
+
 exports.getEnv = (fr, deployment, project, repo, buildDir, stageDir) ->
   targetUrl = Npm.require('url').parse(deployment.targetHost)
   appInstallUrl = ''
@@ -15,6 +25,7 @@ exports.getEnv = (fr, deployment, project, repo, buildDir, stageDir) ->
     BUILD_DIR: buildDir
     STAGE_DIR: stageDir
     ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
+    NODE_VERSION: getNodeVersion(buildDir, repo)
     SSH_HOST: targetUrl.hostname
     SSH_USER: deployment.sshConfig?.user || 'root'
     SSH_PORT: deployment.sshConfig?.port || 22

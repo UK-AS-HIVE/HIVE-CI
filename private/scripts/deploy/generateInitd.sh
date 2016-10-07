@@ -67,6 +67,8 @@ EOF
 
   cat << EOF >> ${INITD_FILE}
 
+  nvm use ${NODE_VERSION}
+
   forever start --pidFile \$pidfile -l \$logFile -o \$outFile -e \$errFile -a -d --sourceDir \$sourceDir/ main.js
 
   RETVAL=\$?
@@ -74,6 +76,7 @@ EOF
 
 restart() {
   echo -n "Restarting \$scriptId"
+  nvm use ${NODE_VERSION}
   forever restart \$scriptId
   RETVAL=\$?
 }
