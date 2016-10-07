@@ -16,12 +16,6 @@ exports.deploy =
 
       echo "Updating server configuration and restarting app"
       ssh -p ${SSH_PORT} -oBatchMode=yes ${SSH_USER}@${SSH_HOST} << ENDSSH
-        #rm /etc/nginx/sites-enabled/*
-        #ln -s /etc/nginx/sites-available/${SSH_HOST}.conf /etc/nginx/sites-enabled/${SSH_HOST}.conf
-        nvm install ${NODE_VERSION}
-        npm install -g --unsafe-perm forever
-
-        cd /var/meteor/${REPO}/programs/server && npm install
         update-rc.d meteor-${REPO} defaults
         /etc/init.d/meteor-${REPO} stop; /etc/init.d/meteor-${REPO} start
         service nginx restart

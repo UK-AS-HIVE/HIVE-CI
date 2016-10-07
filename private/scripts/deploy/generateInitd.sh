@@ -44,6 +44,21 @@ outFile=/var/log/forever-initd-meteor-$DIR.out
 sourceDir=/var/meteor/$DIR
 scriptId=\$sourceDir/main.js
 
+setup_nodejs() {
+  if [[ -d /opt/nvm ]]
+  then
+    cd /opt/
+    git clone https://github.com/creationix/nvm
+  fi
+
+  source /opt/nvm/nvm.sh
+  npm install ${NODE_VERSION}
+  npm use ${NODE_VERSION}
+  npm install -g --unsafe-perm forever
+
+  cd /var/meteor/${REPO}/programs/server && npm install
+}
+
 start() {
   echo "Starting \$scriptId"
 
@@ -67,7 +82,7 @@ EOF
 
   cat << EOF >> ${INITD_FILE}
 
-  source \${NVM_DIR}/nvm.sh && nvm use ${NODE_VERSION}
+  setup_nodejs()
   forever start --pidFile \$pidfile -l \$logFile -o \$outFile -e \$errFile -a -d --sourceDir \$sourceDir/ main.js
 
   RETVAL=\$?
@@ -75,21 +90,21 @@ EOF
 
 restart() {
   echo -n "Restarting \$scriptId"
-  source \${NVM_DIR}/nvm.sh && nvm use ${NODE_VERSION}
+  setup_nodejs()
   forever restart \$scriptId
   RETVAL=\$?
 }
 
 stop() {
   echo -n "Shutting down \$scriptId"
-  source \${NVM_DIR}/nvm.sh && nvm use ${NODE_VERSION}
+  setup_nodejs()
   forever stop \$scriptId
   RETVAL=\$?
 }
 
 status() {
   echo -n "Status \$scriptId"
-  source \${NVM_DIR}/nvm.sh && nvm use ${NODE_VERSION}
+  setup_nodejs()
   forever list
   RETVAL=\$?
 }
