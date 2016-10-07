@@ -67,8 +67,7 @@ EOF
 
   cat << EOF >> ${INITD_FILE}
 
-  nvm use ${NODE_VERSION}
-
+  source \${NVM_DIR}/nvm.sh && nvm use ${NODE_VERSION}
   forever start --pidFile \$pidfile -l \$logFile -o \$outFile -e \$errFile -a -d --sourceDir \$sourceDir/ main.js
 
   RETVAL=\$?
@@ -76,19 +75,21 @@ EOF
 
 restart() {
   echo -n "Restarting \$scriptId"
-  nvm use ${NODE_VERSION}
+  source \${NVM_DIR}/nvm.sh && nvm use ${NODE_VERSION}
   forever restart \$scriptId
   RETVAL=\$?
 }
 
 stop() {
   echo -n "Shutting down \$scriptId"
+  source \${NVM_DIR}/nvm.sh && nvm use ${NODE_VERSION}
   forever stop \$scriptId
   RETVAL=\$?
 }
 
 status() {
   echo -n "Status \$scriptId"
+  source \${NVM_DIR}/nvm.sh && nvm use ${NODE_VERSION}
   forever list
   RETVAL=\$?
 }
