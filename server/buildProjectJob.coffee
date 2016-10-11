@@ -93,6 +93,8 @@ class @BuildProjectJob extends ExecJob
 
     {getBuildStages} = require '/imports/stages/getBuildStages.coffee'
     stages = getBuildStages fr, deployment, proj, repo, buildDir, stageDir
+    {getEnv} = require '/imports/stages/getEnv.coffee'
+    @params.env = getEnv fr, deployment, proj, repo, buildDir, stageDir
 
     if !stages
       BuildSessions.update session._id,
@@ -109,7 +111,6 @@ class @BuildProjectJob extends ExecJob
           cd #{fr}/sandbox/build/#{repo}
           #{s.cmd}
         """
-        @params.env = s.env
       BuildSessions.update session._id,
         $set:
           message: s.name

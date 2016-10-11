@@ -88,7 +88,8 @@
         "level": "error"
     },
     "no_trailing_semicolons": {
-        "level": "error"
+        "level": "ignore",
+        "allowed_in_comments": true
     },
     "no_trailing_whitespace": {
         "level": "error",
