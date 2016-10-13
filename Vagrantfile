@@ -51,20 +51,9 @@ Vagrant.configure(2) do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", :privileged => false, :inline => <<-SHELL
     sudo apt-get update
-    sudo apt-get install -y software-properties-common nginx-full graphicsmagick ghostscript git-core
+    sudo apt-get install -y software-properties-common nginx-full graphicsmagick ghostscript git-core g++
   SHELL
 
-  config.vm.provision "shell", :inline => <<-SHELL
-    git clone https://github.com/creationix/nvm ~/.nvm
-    echo "source ~/.nvm/nvm.sh" | tee ~/.bashrc
-    source ~/.nvm/nvm.sh
-    nvm install v0.10
-    nvm use 0.10
-    nvm alias default 0.10
-
-    npm install -g forever
-  SHELL
-    
   config.vm.provision "shell", :inline => <<-SHELL
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
     echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.0.list
