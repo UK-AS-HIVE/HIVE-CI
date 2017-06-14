@@ -74,6 +74,7 @@ start() {
   export MONGO_URL=mongodb://localhost:27017/$DIR
   export ROOT_URL=${DEV_SERVER}
   export MAIL_URL=smtp://localhost:25
+  ${INITD_ENVVARS}
 EOF
 
   if [[ -e "${BUILD_DIR}/${DIR}/settings.json" ]]

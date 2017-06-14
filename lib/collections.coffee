@@ -1,3 +1,8 @@
+SimpleSchema.messages
+  settingsInvalidJSON: 'Settings must be valid JSON.'
+  envVarFormat: 'Environment variables should be one per line.  Names can be capital letters and underscores, separated from values by ='
+
+
 @Projects = new Mongo.Collection 'projects'
 @Projects.attachSchema new SimpleSchema
   name:
@@ -57,7 +62,7 @@
       try
         JSON.parse @value
       catch e
-        return 'Settings must be valid JSON.'
+        'settingsInvalidJSON'
     autoform:
       label: 'Settings (JSON)'
       type: 'textarea'
@@ -99,10 +104,17 @@
       ]
     optional: true
   env:
-    type: Object
+    type: String
     optional: true
-    blackbox: true
     label: 'Environment Variables'
+    custom: ->
+      try
+        @value.split('\n').forEach (l) ->
+          [whole, name, value, ...] = l.match /^([A-Z_]+)=(.*)$/
+          name: name
+          value: value
+      catch e
+        'envVarFormat'
     autoform:
       type: 'textarea'
 

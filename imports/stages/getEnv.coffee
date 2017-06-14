@@ -28,6 +28,7 @@ exports.getEnv = (fr, deployment, project, repo, buildDir, stageDir) ->
     STAGE_DIR: stageDir
     ANDROID_HOME: process.env.ANDROID_HOME || (process.env.HOME + '/.meteor/android_bundle/android-sdk')
     NODE_VERSION: getNodeVersion(buildDir, repo)
+    INITD_ENVVARS: deployment.env?.split('\n').map((l) -> 'export ' + l).join('\n') || ''
     SSH_HOST: targetUrl.hostname
     SSH_USER: deployment.sshConfig?.user || 'root'
     SSH_PORT: deployment.sshConfig?.port || 22
