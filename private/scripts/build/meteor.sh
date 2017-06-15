@@ -34,6 +34,7 @@ function buildMeteor() {
   # Make sure to generate a clean build, since android seems to bail if the projects were already made
   rm -rf build ../${REPO}-build
   echo "Building... for devserver ${DEV_SERVER}"
+  meteor npm install
   meteor build --debug --directory ${BUILD_DIR}/${REPO}-build --architecture os.linux.x86_64 --server ${DEV_SERVER}
 
   RET=$?
