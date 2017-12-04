@@ -69,7 +69,9 @@ function meteorApplyDevPatches() {
   find client -name "*.html" -type f -print0 | xargs -0 gsed -i 's/src="\//src="{{rootAppUrl}}\//g'
 
   echo "Patching css url() references for relative routes"
-  find client -name "*.css" -type f -print0 | xargs -0 gsed -i "s#url(\(['\"]\)\?\(\/\)\?#url(\1\2${TARGET_PATH}#g"
+  #find client -name "*.css" -type f -print0 | xargs -0 gsed -i "s#url(\(['\"]\)\?\(\/\)\?#url(\1\2${TARGET_PATH}#g"
+  find client -name "*.css" -type f -print0 | xargs -0 perl -n -i -e "s#url\((?!['\"]?http)(['\"])?(\/)?#url(\1\2${TARGET_PATH}#g; print;"
+
 
   echo "Copying ${ORIG_DIR}/scripts/build/relativeRoutes.js"
   mkdir -p lib/relativeRoutes
