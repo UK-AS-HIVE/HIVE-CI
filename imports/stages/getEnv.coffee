@@ -1,7 +1,9 @@
 getNodeVersion = (buildDir, repo) ->
   fs = Npm.require('fs')
   meteorRelease = fs.readFileSync "#{buildDir}/#{repo}/.meteor/release"
-  if meteorRelease.indexOf("@1.4") > -1
+  if meteorRelease.indexOf("@1.5.") > -1
+    return "4.8.4"
+  else if meteorRelease.indexOf("@1.4") > -1
     return "4.5.0"
   else if meteorRelease.indexOf("@1.3") > -1
     return "0.10.46"
