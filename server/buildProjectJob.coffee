@@ -94,7 +94,15 @@ class @BuildProjectJob extends ExecJob
     {getBuildStages} = require '/imports/stages/getBuildStages.coffee'
     stages = getBuildStages fr, deployment, proj, repo, buildDir, stageDir
     {getEnv} = require '/imports/stages/getEnv.coffee'
-    @params.env = getEnv fr, deployment, proj, repo, buildDir, stageDir
+    try
+      @params.env = getEnv fr, deployment, proj, repo, buildDir, stageDir
+    catch err
+      BuildSession.update session._id,
+        $set:
+          status: 'Unsupported'
+          message: err
+          timestamp: Date.now()
+      return
 
     if !stages
       BuildSessions.update session._id,

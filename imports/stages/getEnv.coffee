@@ -1,14 +1,18 @@
 getNodeVersion = (buildDir, repo) ->
   fs = Npm.require('fs')
   meteorRelease = fs.readFileSync "#{buildDir}/#{repo}/.meteor/release"
-  if meteorRelease.indexOf("@1.5.") > -1
+  if meteorRelease.indexOf("@1.6.0") > -1
+    return "8.9.3"
+  else if meteorRelease.indexOf("@1.6") > -1
+    return "8.8.1"
+  else if meteorRelease.indexOf("@1.5.") > -1
     return "4.8.4"
   else if meteorRelease.indexOf("@1.4") > -1
     return "4.5.0"
   else if meteorRelease.indexOf("@1.3") > -1
     return "0.10.46"
   else
-    return "0.10"
+    throw "unsupported Meteor version - not sure which node version to use"
 
 exports.getEnv = (fr, deployment, project, repo, buildDir, stageDir) ->
   targetHref = deployment.targetHost.replace(/\/$/, '') + '/'
