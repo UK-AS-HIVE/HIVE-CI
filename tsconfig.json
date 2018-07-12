@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "jsx": "react",
+    "allowJs": false,
+    "noImplicitAny": false,
+    "strictNullChecks": true
+  },
+  "include": [
+    "lib/**/*",
+    "client/**/*",
+    "server/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    ".meteor"
+  ]
+}
