@@ -101,6 +101,32 @@ export var Deployments = new Mongo.Collection('deployments');
       placeholder: "{\n  \"settings\": {\n    \"foo\": \"bar\"\n  }\n}"
     }
   },
+  basicAuthentication: {
+    type: Object,
+    optional: true,
+    autoform: {
+      label: 'Basic Authentication (Optional)'
+    }
+  },
+  'basicAuthentication.prompt': {
+    type: String,
+    autoform: {
+      label: 'Prompt',
+      placeholder: 'Authentication Required'
+    }
+  },
+  'basicAuthentication.username': {
+    type: String,
+    autoform: {
+      label: 'Username'
+    }
+  },
+  'basicAuthentication.password': {
+    type: String,
+    autoform: {
+      label: 'Password'
+    }
+  },
   sshConfig: {
     type: Object,
     optional: true,

@@ -50,6 +50,10 @@
 
     {{#each proxiedApps}}
     location {{appPath}} {
+      {{#if basicAuthentication.username}}
+      auth_basic {{escapeChars basicAuthentication.prompt}};
+      auth_basic_user_file /etc/nginx/htpasswd/{{repo}};
+      {{/if}}
       proxy_pass http://localhost:{{internalPort}};
     }
 
