@@ -4,10 +4,12 @@ getNodeVersion = function(buildDir, repo) {
   var fs, meteorRelease;
   fs = Npm.require('fs');
   meteorRelease = fs.readFileSync(buildDir + "/" + repo + "/.meteor/release");
-  if (meteorRelease.indexOf("@1.6.0") > -1) {
-    return "8.9.3";
+  if (meteorRelease.indexOf("@1.8") > -1) {
+    return "8.15.1";
+  } else if (meteorRelease.indexOf("@1.7") > -1) {
+    return "8.11.4";
   } else if (meteorRelease.indexOf("@1.6") > -1) {
-    return "8.8.1";
+    return "8.11.4";
   } else if (meteorRelease.indexOf("@1.5.") > -1) {
     return "4.8.4";
   } else if (meteorRelease.indexOf("@1.4") > -1) {
