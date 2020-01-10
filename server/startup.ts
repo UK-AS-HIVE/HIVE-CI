@@ -1,6 +1,8 @@
 import {SyncedCron} from 'meteor/percolate:synced-cron';
 import {Projects} from '../lib/collections';
 
+import {Jobs} from 'meteor/differential:workers';
+
 var getReposFromGithub, scheduleBuildAllProjects;
 
 getReposFromGithub = function() {

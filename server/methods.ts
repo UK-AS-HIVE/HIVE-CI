@@ -1,6 +1,8 @@
 import {Projects, BuildSessions, Deployments} from '../lib/collections';
 import {BuildProjectJob} from './buildProjectJob';
 
+import {Job} from 'meteor/differential:workers';
+
 Meteor.methods({
   buildProject: function(projectId, forceRebuild) {
     var project;

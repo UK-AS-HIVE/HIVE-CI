@@ -1,9 +1,6 @@
-var getNodeVersion;
-
-getNodeVersion = function(buildDir, repo) {
-  var fs, meteorRelease;
-  fs = Npm.require('fs');
-  meteorRelease = fs.readFileSync(buildDir + "/" + repo + "/.meteor/release");
+function getNodeVersion(buildDir : string, repo : string) {
+  const fs = require('fs');
+  const meteorRelease = fs.readFileSync(buildDir + "/" + repo + "/.meteor/release");
   if (meteorRelease.indexOf("@1.8") > -1) {
     return "8.15.1";
   } else if (meteorRelease.indexOf("@1.7") > -1) {
@@ -21,7 +18,7 @@ getNodeVersion = function(buildDir, repo) {
   }
 };
 
-export const getEnv = function(fr, deployment, project, repo, buildDir, stageDir) {
+export const getEnv = function(fr : string, deployment, project, repo : string, buildDir, stageDir) {
   var appInstallUrl, ref, ref1, ref2, ref3, targetHref, targetUrl;
   targetHref = deployment.targetHost.replace(/\/$/, '') + '/';
   targetUrl = Npm.require('url').parse(targetHref);
