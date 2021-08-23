@@ -1,21 +1,14 @@
-function getNodeVersion(buildDir : string, repo : string) {
-  const fs = require('fs');
-  const meteorRelease = fs.readFileSync(buildDir + "/" + repo + "/.meteor/release");
-  if (meteorRelease.indexOf("@1.8") > -1) {
-    return "8.15.1";
-  } else if (meteorRelease.indexOf("@1.7") > -1) {
-    return "8.11.4";
-  } else if (meteorRelease.indexOf("@1.6") > -1) {
-    return "8.11.4";
-  } else if (meteorRelease.indexOf("@1.5.") > -1) {
-    return "4.8.4";
-  } else if (meteorRelease.indexOf("@1.4") > -1) {
-    return "4.5.0";
-  } else if (meteorRelease.indexOf("@1.3") > -1) {
-    return "0.10.46";
-  } else {
-    throw "unsupported Meteor version - not sure which node version to use";
-  }
+import * as fs from 'fs';
+import {execSync} from 'child_process';
+
+function getMeteorVersion(buildDir : string, repo : string) : string {
+  const meteorRelease = fs.readFileSync(buildDir + "/" + repo + "/.meteor/release").toString();
+  return meteorRelease.split('@').pop() as string;
+}
+
+function getNodeVersion(buildDir : string, repo : string) : string {
+  const ver = execSync(`cd ${buildDir}/${repo} && meteor node --version`).toString().replace(/^v/, '');
+  return ver;
 };
 
 export const getEnv = function(fr : string, deployment, project, repo : string, buildDir, stageDir) {
@@ -28,7 +21,7 @@ export const getEnv = function(fr : string, deployment, project, repo : string, 
   }
   console.log("APP INSTALL URL: " + appInstallUrl);
   return _.extend(_.pick(process.env, 'HOME', 'LANG', 'PATH', 'NVM_BIN', 'NVM_DIR', 'NVM_NODEJS_ORG_MIRROR', 'NVM_PATH', 'SHELL', 'SHLVL', 'TERM', 'USER'), {
-    METEOR_VERSION: 'something?',
+    METEOR_VERSION: getMeteorVersion(buildDir, repo),
     GH_API_TOKEN: Meteor.settings.ghApiToken,
     ORG_PREFIX: Meteor.settings.orgName,
     ORG_REVERSE_URL: Meteor.settings.orgReverseUrl,
